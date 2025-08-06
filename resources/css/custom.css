@@ -1,0 +1,11 @@
+.is-invalid {
+    border-color: #e74a3b !important;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #e74a3b;
+}

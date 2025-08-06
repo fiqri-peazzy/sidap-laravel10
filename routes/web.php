@@ -23,6 +23,14 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('admin.dashboard');
     })->name('dashboard');
+
+    Route::get('/cabang-olahraga', function () {
+        return view('admin.cabor');
+    })->name('cabang-olahraga.index');
+
+    Route::get('/klub', function () {
+        return view('admin.klub');
+    })->name('klub.index');
 });
