@@ -33,4 +33,8 @@ Route::middleware([
     Route::get('/klub', function () {
         return view('admin.klub');
     })->name('klub.index');
+
+    Route::get('/pelatih', function () {
+        return view('admin.pelatih');
+    })->name('pelatih.index');
 });

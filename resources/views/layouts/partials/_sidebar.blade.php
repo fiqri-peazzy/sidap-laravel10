@@ -40,14 +40,14 @@
             <i class="fas fa-fw fa-users"></i>
             <span>Klub</span></a>
     </li>
-    {{-- 
+
     <!-- Nav Item - Pelatih -->
     <li class="nav-item {{ request()->routeIs('pelatih.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('pelatih.index') }}">
             <i class="fas fa-fw fa-user-tie"></i>
             <span>Pelatih</span></a>
     </li>
-
+    {{-- 
     <!-- Divider -->
     <hr class="sidebar-divider">
 
