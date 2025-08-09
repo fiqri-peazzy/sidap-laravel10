@@ -1,95 +1,157 @@
-<x-form-section submit="updateProfileInformation">
-    <x-slot name="title">
-        {{ __('Profile Information') }}
-    </x-slot>
+<div>
+    <form wire:submit="updateProfileInformation">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="name" class="form-label">
+                    <i class="fas fa-user text-primary mr-1"></i>
+                    Nama Lengkap <span class="text-danger">*</span>
+                </label>
+                <input type="text" wire:model="state.name" id="name"
+                    class="form-control @error('name') is-invalid @enderror" required>
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
-    <x-slot name="description">
-        {{ __('Update your account\'s profile information and email address.') }}
-    </x-slot>
+            <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">
+                    <i class="fas fa-envelope text-primary mr-1"></i>
+                    Alamat Email <span class="text-danger">*</span>
+                </label>
+                <input type="email" wire:model="state.email" id="email"
+                    class="form-control @error('email') is-invalid @enderror" required>
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
 
-    <x-slot name="form">
-        <!-- Profile Photo -->
-        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-            <div x-data="{photoName: null, photoPreview: null}" class="col-span-6 sm:col-span-4">
-                <!-- Profile Photo File Input -->
-                <input type="file" id="photo" class="hidden"
-                            wire:model.live="photo"
-                            x-ref="photo"
-                            x-on:change="
-                                    photoName = $refs.photo.files[0].name;
-                                    const reader = new FileReader();
-                                    reader.onload = (e) => {
-                                        photoPreview = e.target.result;
-                                    };
-                                    reader.readAsDataURL($refs.photo.files[0]);
-                            " />
+                @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) &&
+                        !auth()->user()->hasVerifiedEmail())
+                    <div class="alert alert-warning mt-2 d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <div>
+                            <small>
+                                Email Anda belum terverifikasi.
+                                <button type="button" class="btn btn-link p-0 text-decoration-underline"
+                                    wire:click.prevent="sendEmailVerification">
+                                    Kirim ulang email verifikasi
+                                </button>
+                            </small>
+                        </div>
+                    </div>
 
-                <x-label for="photo" value="{{ __('Photo') }}" />
-
-                <!-- Current Profile Photo -->
-                <div class="mt-2" x-show="! photoPreview">
-                    <img src="{{ $this->user->profile_photo_url }}" alt="{{ $this->user->name }}" class="rounded-full h-20 w-20 object-cover">
-                </div>
-
-                <!-- New Profile Photo Preview -->
-                <div class="mt-2" x-show="photoPreview" style="display: none;">
-                    <span class="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center"
-                          x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
-                    </span>
-                </div>
-
-                <x-secondary-button class="mt-2 me-2" type="button" x-on:click.prevent="$refs.photo.click()">
-                    {{ __('Select A New Photo') }}
-                </x-secondary-button>
-
-                @if ($this->user->profile_photo_path)
-                    <x-secondary-button type="button" class="mt-2" wire:click="deleteProfilePhoto">
-                        {{ __('Remove Photo') }}
-                    </x-secondary-button>
+                    @if ($this->verificationLinkSent)
+                        <div class="alert alert-success mt-2">
+                            <small>
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Link verifikasi baru telah dikirim ke email Anda.
+                            </small>
+                        </div>
+                    @endif
                 @endif
+            </div>
+        </div>
 
-                <x-input-error for="photo" class="mt-2" />
+        <!-- Additional Profile Fields (Custom for PPLP) -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">
+                    <i class="fas fa-phone text-primary mr-1"></i>
+                    Nomor Telepon
+                </label>
+                <input type="text" wire:model="state.phone" id="phone"
+                    class="form-control @error('phone') is-invalid @enderror" placeholder="Contoh: 081234567890">
+                @error('phone')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="position" class="form-label">
+                    <i class="fas fa-id-badge text-primary mr-1"></i>
+                    Jabatan/Posisi
+                </label>
+                <select wire:model="state.position" id="position"
+                    class="form-control @error('position') is-invalid @enderror">
+                    <option value="">Pilih Jabatan</option>
+                    <option value="administrator">Administrator</option>
+                    <option value="kepala_pplp">Kepala PPLP</option>
+                    <option value="staff_admin">Staff Administrasi</option>
+                    <option value="pelatih">Pelatih</option>
+                    <option value="dokter">Dokter Olahraga</option>
+                    <option value="fisioterapis">Fisioterapis</option>
+                    <option value="gizi">Ahli Gizi</option>
+                    <option value="psikolog">Psikolog Olahraga</option>
+                </select>
+                @error('position')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <label for="bio" class="form-label">
+                    <i class="fas fa-info-circle text-primary mr-1"></i>
+                    Bio/Deskripsi Singkat
+                </label>
+                <textarea wire:model="state.bio" id="bio" rows="3" class="form-control @error('bio') is-invalid @enderror"
+                    placeholder="Ceritakan sedikit tentang diri Anda..."></textarea>
+                @error('bio')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">
+                    Maksimal 500 karakter
+                </small>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                <small>
+                    <i class="fas fa-clock mr-1"></i>
+                    Terakhir diperbarui: {{ auth()->user()->updated_at->diffForHumans() }}
+                </small>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="updateProfileInformation">
+                        <i class="fas fa-save mr-1"></i>
+                        Simpan Perubahan
+                    </span>
+                    <span wire:loading wire:target="updateProfileInformation">
+                        <i class="fas fa-spinner fa-spin mr-1"></i>
+                        Menyimpan...
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        @if (session('status') === 'profile-information-updated')
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <i class="fas fa-check-circle mr-2"></i>
+                <strong>Berhasil!</strong> Informasi profil Anda telah diperbarui.
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         @endif
+    </form>
 
-        <!-- Name -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Name') }}" />
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model="state.name" required autocomplete="name" />
-            <x-input-error for="name" class="mt-2" />
-        </div>
-
-        <!-- Email -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="email" value="{{ __('Email') }}" />
-            <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="username" />
-            <x-input-error for="email" class="mt-2" />
-
-            @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) && ! $this->user->hasVerifiedEmail())
-                <p class="text-sm mt-2">
-                    {{ __('Your email address is unverified.') }}
-
-                    <button type="button" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" wire:click.prevent="sendEmailVerification">
-                        {{ __('Click here to re-send the verification email.') }}
-                    </button>
-                </p>
-
-                @if ($this->verificationLinkSent)
-                    <p class="mt-2 font-medium text-sm text-green-600">
-                        {{ __('A new verification link has been sent to your email address.') }}
-                    </p>
-                @endif
-            @endif
-        </div>
-    </x-slot>
-
-    <x-slot name="actions">
-        <x-action-message class="me-3" on="saved">
-            {{ __('Saved.') }}
-        </x-action-message>
-
-        <x-button wire:loading.attr="disabled" wire:target="photo">
-            {{ __('Save') }}
-        </x-button>
-    </x-slot>
-</x-form-section>
+    <!-- JavaScript for auto-hide success message -->
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('profile-updated', () => {
+                setTimeout(() => {
+                    const alert = document.querySelector('.alert-success');
+                    if (alert) {
+                        alert.classList.remove('show');
+                        setTimeout(() => alert.remove(), 300);
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+</div>

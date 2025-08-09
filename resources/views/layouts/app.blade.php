@@ -100,7 +100,10 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('template/js/demo/chart-area-demo.js') }}"></script>
     <script src="{{ asset('template/js/demo/chart-pie-demo.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @include('sweetalert::alert')
 
+    {{-- <script src="{{ mix('js/app.js') }}"></script> --}}
     @livewireScripts
 </body>
 
