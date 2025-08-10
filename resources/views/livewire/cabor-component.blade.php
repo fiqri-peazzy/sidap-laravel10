@@ -59,7 +59,7 @@
                                 <td>{{ Str::limit($cabang->deskripsi ?? '-', 50) }}</td>
                                 <td>{!! $cabang->status_badge !!}</td>
                                 <td>
-                                    <span class="badge badge-info">{{ $cabang->jumlah_atlit ?? 0 }} atlit</span>
+                                    <span class="badge badge-info">{{ $cabang->atlit_count ?? 0 }} atlit</span>
                                 </td>
                                 <td>{{ $cabang->created_at->format('d/m/Y H:i') }}</td>
                                 <td>

@@ -20,6 +20,7 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
     @livewireStyles
+    @stack('styles')
 </head>
 
 <body id="page-top">
@@ -104,7 +105,10 @@
     @include('sweetalert::alert')
 
     {{-- <script src="{{ mix('js/app.js') }}"></script> --}}
+
+
     @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

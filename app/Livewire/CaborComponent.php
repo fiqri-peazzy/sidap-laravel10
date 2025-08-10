@@ -121,7 +121,8 @@ class CaborComponent extends Component
 
     public function render()
     {
-        $cabangOlahraga = Cabor::where('nama_cabang', 'like', '%' . $this->search . '%')
+        $cabangOlahraga = Cabor::withCount('atlit')
+            ->where('nama_cabang', 'like', '%' . $this->search . '%')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return view('livewire.cabor-component', [

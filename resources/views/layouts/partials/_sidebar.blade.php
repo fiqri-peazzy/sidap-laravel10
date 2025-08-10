@@ -47,7 +47,7 @@
             <i class="fas fa-fw fa-user-tie"></i>
             <span>Pelatih</span></a>
     </li>
-    {{-- 
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 
@@ -76,7 +76,7 @@
             </div>
         </div>
     </li>
-
+    {{-- 
     <!-- Nav Item - Prestasi -->
     <li class="nav-item {{ request()->routeIs('prestasi.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('prestasi.index') }}">

@@ -43,10 +43,10 @@ class Cabor extends Model
             ? '<span class="badge badge-success">Aktif</span>'
             : '<span class="badge badge-secondary">Nonaktif</span>';
     }
-    // public function atlit()
-    // {
-    //     return $this->hasMany(Atlit::class, 'cabang_olahraga_id');
-    // }
+    public function atlit()
+    {
+        return $this->hasMany(Atlit::class, 'cabang_olahraga_id');
+    }
 
     // public function events()
     // {

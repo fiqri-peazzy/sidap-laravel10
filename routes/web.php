@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AtlitController;
+use App\Http\Controllers\KategoriAtlitController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,4 +38,12 @@ Route::middleware([
     Route::get('/pelatih', function () {
         return view('admin.pelatih');
     })->name('pelatih.index');
+
+    // Routes untuk Atlit
+    Route::resource('atlit', AtlitController::class);
+    Route::get('/atlit/kategori/data', [AtlitController::class, 'kategori'])->name('atlit.kategori');
+    Route::get('/api/kategori-atlit/{cabangOlahragaId}', [AtlitController::class, 'getKategori'])->name('api.kategori-atlit');
+
+    // Routes untuk Kategori Atlit
+    Route::resource('kategori-atlit', KategoriAtlitController::class);
 });
