@@ -76,7 +76,6 @@
             </div>
         </div>
     </li>
-    {{-- 
     <!-- Nav Item - Prestasi -->
     <li class="nav-item {{ request()->routeIs('prestasi.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('prestasi.index') }}">
@@ -86,6 +85,7 @@
 
     <!-- Divider -->
     <hr class="sidebar-divider">
+    {{-- 
 
     <!-- Heading -->
     <div class="sidebar-heading">

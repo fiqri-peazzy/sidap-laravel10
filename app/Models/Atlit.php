@@ -211,4 +211,48 @@ class Atlit extends Model
             'status' => 'required|in:aktif,nonaktif,pensiun',
         ];
     }
+
+    public function prestasi()
+    {
+        return $this->hasMany(Prestasi::class, 'atlit_id');
+    }
+
+    // Accessor untuk jumlah prestasi
+    public function getJumlahPrestasiAttribute()
+    {
+        return $this->prestasi()->verified()->count();
+    }
+
+    // Accessor untuk prestasi terbaik
+    public function getPrestasiBaikAttribute()
+    {
+        return $this->prestasi()
+            ->verified()
+            ->orderByRaw("CASE 
+                WHEN peringkat = '1' THEN 1
+                WHEN peringkat = '2' THEN 2
+                WHEN peringkat = '3' THEN 3
+                ELSE 4
+            END")
+            ->orderBy('tahun', 'desc')
+            ->first();
+    }
+
+    // Method untuk mendapatkan statistik prestasi atlet
+    public function getStatistikPrestasi()
+    {
+        $prestasi = $this->prestasi()->verified();
+
+        return [
+            'total' => $prestasi->count(),
+            'juara_1' => (clone $prestasi)->where('peringkat', '1')->count(),
+            'juara_2' => (clone $prestasi)->where('peringkat', '2')->count(),
+            'juara_3' => (clone $prestasi)->where('peringkat', '3')->count(),
+            'emas' => (clone $prestasi)->where('medali', 'Emas')->count(),
+            'perak' => (clone $prestasi)->where('medali', 'Perak')->count(),
+            'perunggu' => (clone $prestasi)->where('medali', 'Perunggu')->count(),
+            'nasional' => (clone $prestasi)->where('jenis_kejuaraan', 'Nasional')->count(),
+            'internasional' => (clone $prestasi)->where('jenis_kejuaraan', 'Internasional')->count(),
+        ];
+    }
 }

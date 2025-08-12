@@ -189,6 +189,7 @@ return [
         // 'Example' => App\Facades\Example::class,
 
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+        Yajra\DataTables\DataTablesServiceProvider::class,
 
     ])->toArray(),
 
