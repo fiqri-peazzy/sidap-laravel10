@@ -85,9 +85,34 @@
 
     <!-- Divider -->
     <hr class="sidebar-divider">
-    {{-- 
 
     <!-- Heading -->
+    <div class="sidebar-heading">
+        Jadwal & Kegiatan
+    </div>
+
+    <!-- Nav Item - Jadwal Latihan -->
+    <li class="nav-item {{ request()->routeIs('jadwal-latihan.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('jadwal-latihan.index') }}">
+            <i class="fas fa-fw fa-clock"></i>
+            <span>Jadwal Latihan</span></a>
+    </li>
+
+    <!-- Nav Item - Jadwal Event -->
+    <li class="nav-item {{ request()->routeIs('jadwal-event.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('jadwal-event.index') }}">
+            <i class="fas fa-fw fa-calendar-alt"></i>
+            <span>Jadwal Event</span></a>
+    </li>
+
+    <!-- Nav Item - Kalender Kegiatan -->
+    <li class="nav-item {{ request()->routeIs('kalender-kegiatan') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('kalender-kegiatan') }}">
+            <i class="fas fa-fw fa-calendar"></i>
+            <span>Kalender Kegiatan</span></a>
+    </li>
+
+    {{-- <!-- Heading -->
     <div class="sidebar-heading">
         Kompetisi
     </div>
@@ -111,7 +136,8 @@
                     href="{{ route('event.pendaftaran') }}">Pendaftaran</a>
             </div>
         </div>
-    </li>
+    </li> --}}
+    {{-- 
 
     <!-- Divider -->
     <hr class="sidebar-divider">

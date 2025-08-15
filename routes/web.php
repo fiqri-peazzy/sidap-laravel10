@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AtlitController;
 use App\Http\Controllers\KategoriAtlitController;
 use App\Http\Controllers\PrestasiController;
+use App\Http\Controllers\JadwalLatihanController;
+use App\Http\Controllers\JadwalEventController;
+use App\Http\Controllers\KalenderKegiatanController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,10 +28,13 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+
+    // Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Data Master Routes
     Route::get('/cabang-olahraga', function () {
         return view('admin.cabor');
     })->name('cabang-olahraga.index');
@@ -48,6 +55,7 @@ Route::middleware([
     // Routes untuk Kategori Atlit
     Route::resource('kategori-atlit', KategoriAtlitController::class);
 
+    // Routes untuk Prestasi
     Route::prefix('prestasi')->name('prestasi.')->group(function () {
         Route::get('/', [PrestasiController::class, 'index'])->name('index');
         Route::get('/create', [PrestasiController::class, 'create'])->name('create');
@@ -68,4 +76,66 @@ Route::middleware([
         // Laporan
         Route::get('/laporan/index', [PrestasiController::class, 'laporan'])->name('laporan');
     });
+
+    // Routes untuk Jadwal Latihan
+    Route::prefix('jadwal-latihan')->name('jadwal-latihan.')->group(function () {
+        Route::get('/', [JadwalLatihanController::class, 'index'])->name('index');
+        Route::get('/create', [JadwalLatihanController::class, 'create'])->name('create');
+        Route::post('/', [JadwalLatihanController::class, 'store'])->name('store');
+        Route::get('/{jadwalLatihan}', [JadwalLatihanController::class, 'show'])->name('show');
+        Route::get('/{jadwalLatihan}/edit', [JadwalLatihanController::class, 'edit'])->name('edit');
+        Route::put('/{jadwalLatihan}', [JadwalLatihanController::class, 'update'])->name('update');
+        Route::delete('/{jadwalLatihan}', [JadwalLatihanController::class, 'destroy'])->name('destroy');
+        Route::patch('/{jadwalLatihan}/status', [JadwalLatihanController::class, 'updateStatus'])->name('update-status');
+    });
+
+    // Routes untuk Jadwal Event
+    Route::prefix('jadwal-event')->name('jadwal-event.')->group(function () {
+        Route::get('/', [JadwalEventController::class, 'index'])->name('index');
+        Route::get('/create', [JadwalEventController::class, 'create'])->name('create');
+        Route::post('/', [JadwalEventController::class, 'store'])->name('store');
+        Route::get('/{jadwalEvent}', [JadwalEventController::class, 'show'])->name('show');
+        Route::get('/{jadwalEvent}/edit', [JadwalEventController::class, 'edit'])->name('edit');
+        Route::put('/{jadwalEvent}', [JadwalEventController::class, 'update'])->name('update');
+        Route::delete('/{jadwalEvent}', [JadwalEventController::class, 'destroy'])->name('destroy');
+        Route::patch('/{jadwalEvent}/status', [JadwalEventController::class, 'updateStatus'])->name('update-status');
+
+        // Routes untuk mengelola atlet dalam event
+        Route::get('/{jadwalEvent}/atlit', [JadwalEventController::class, 'manageAtlit'])->name('manage-atlit');
+        Route::patch('/{jadwalEvent}/atlit', [JadwalEventController::class, 'updateAtlit'])->name('update-atlit');
+    });
+
+    // Routes untuk Kalender Kegiatan
+    Route::get('/kalender-kegiatan', [KalenderKegiatanController::class, 'index'])->name('kalender-kegiatan');
+    Route::get('/kalender-kegiatan/export', [KalenderKegiatanController::class, 'exportCalendar'])->name('kalender-kegiatan.export');
+
+    // API Routes untuk AJAX calls
+    Route::prefix('api')->name('api.')->group(function () {
+
+        // API untuk mendapatkan data kalender
+        Route::get('/kalender/events', [KalenderKegiatanController::class, 'getAllEvents'])->name('kalender.events');
+        Route::get('/kalender/events/filter', [KalenderKegiatanController::class, 'filterEvents'])->name('kalender.events.filter');
+        Route::get('/kalender/event-detail', [KalenderKegiatanController::class, 'getEventDetail'])->name('kalender.event-detail');
+
+        // API untuk mendapatkan data jadwal latihan
+        Route::get('/jadwal-latihan/calendar', [JadwalLatihanController::class, 'getJadwalForCalendar'])->name('jadwal-latihan.calendar');
+
+        // API untuk mendapatkan data jadwal event
+        Route::get('/jadwal-event/calendar', [JadwalEventController::class, 'getEventForCalendar'])->name('jadwal-event.calendar');
+
+        // API untuk mendapatkan pelatih berdasarkan cabang olahraga
+        Route::get('/pelatih/by-cabor/{caborId}', [JadwalLatihanController::class, 'getPelatihByCabor'])->name('pelatih.by-cabor');
+
+        // API untuk mendapatkan atlet berdasarkan cabang olahraga
+        Route::get('/atlit/by-cabor/{caborId}', [JadwalEventController::class, 'getAtlitByCabor'])->name('atlit.by-cabor');
+    });
+});
+
+// Route binding untuk model
+Route::bind('jadwalLatihan', function ($value) {
+    return App\Models\JadwalLatihan::findOrFail($value);
+});
+
+Route::bind('jadwalEvent', function ($value) {
+    return App\Models\JadwalEvent::findOrFail($value);
 });
