@@ -102,10 +102,10 @@ class Klub extends Model
         return asset('template/img/default-club.png');
     }
 
-    // public function atlit()
-    // {
-    //     return $this->hasMany(Atlit::class, 'klub_id');
-    // }
+    public function atlit()
+    {
+        return $this->hasMany(Atlit::class, 'klub_id');
+    }
 
     // public function pelatih()
     // {

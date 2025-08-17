@@ -48,6 +48,11 @@ class Cabor extends Model
         return $this->hasMany(Atlit::class, 'cabang_olahraga_id');
     }
 
+    public function prestasi()
+    {
+        return $this->hasMany(Prestasi::class, 'cabang_olahraga_id');
+    }
+
     // public function events()
     // {
     //     return $this->hasMany(Event::class, 'cabang_olahraga_id');

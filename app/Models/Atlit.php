@@ -68,6 +68,8 @@ class Atlit extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+
+
     // Scope untuk status aktif
     public function scopeAktif($query)
     {

@@ -7,7 +7,9 @@ use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\JadwalLatihanController;
 use App\Http\Controllers\JadwalEventController;
 use App\Http\Controllers\KalenderKegiatanController;
-
+use App\Http\Controllers\LaporanController;
+use App\Http\Livewire\LaporanAtlit;
+use App\Http\Livewire\LaporanPrestasi;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -128,6 +130,17 @@ Route::middleware([
 
         // API untuk mendapatkan atlet berdasarkan cabang olahraga
         Route::get('/atlit/by-cabor/{caborId}', [JadwalEventController::class, 'getAtlitByCabor'])->name('atlit.by-cabor');
+    });
+
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        // Laporan Atlit
+        Route::get('/atlit', [App\Http\Controllers\LaporanController::class, 'atlit'])->name('atlit');
+        Route::get('/atlit/cetak', [App\Http\Controllers\LaporanController::class, 'cetakAtlit'])->name('atlit.cetak');
+        // Laporan Prestasi
+        Route::get('/prestasi', [App\Http\Controllers\LaporanController::class, 'prestasi'])->name('prestasi');
+        Route::get('/prestasi/cetak', [App\Http\Controllers\LaporanController::class, 'cetakPrestasi'])->name('prestasi.cetak');
+        // Statistik
+        Route::get('/statistik', [App\Http\Controllers\LaporanController::class, 'statistik'])->name('statistik');
     });
 });
 
