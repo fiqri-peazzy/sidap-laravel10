@@ -65,7 +65,7 @@ class JadwalEventController extends Controller
             DB::commit();
 
             return redirect()->route('jadwal-event.index')
-                ->with('success', 'Jadwal event berhasil ditambahkan.');
+                ->with('success', 'Event "' . $event->nama_event . '" berhasil ditambahkan!');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()
@@ -84,7 +84,6 @@ class JadwalEventController extends Controller
     {
         $cabangOlahraga = Cabor::aktif()->get();
         $jadwalEvent->load(['atlit']);
-
         return view('admin.jadwal-event.edit', compact('jadwalEvent', 'cabangOlahraga'));
     }
 
@@ -105,7 +104,7 @@ class JadwalEventController extends Controller
             DB::commit();
 
             return redirect()->route('jadwal-event.index')
-                ->with('success', 'Jadwal event berhasil diupdate.');
+                ->with('success', 'Event "' . $jadwalEvent->nama_event . '" berhasil diperbarui!');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()
@@ -119,6 +118,8 @@ class JadwalEventController extends Controller
         try {
             DB::beginTransaction();
 
+            $namaEvent = $jadwalEvent->nama_event; // Simpan nama sebelum dihapus
+
             // Hapus relasi dengan atlet terlebih dahulu
             $jadwalEvent->atlit()->detach();
             $jadwalEvent->delete();
@@ -126,7 +127,7 @@ class JadwalEventController extends Controller
             DB::commit();
 
             return redirect()->route('jadwal-event.index')
-                ->with('success', 'Jadwal event berhasil dihapus.');
+                ->with('success', 'Event "' . $namaEvent . '" berhasil dihapus!');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()
@@ -141,10 +142,17 @@ class JadwalEventController extends Controller
         ]);
 
         try {
+            $statusLabel = [
+                'aktif' => 'Aktif',
+                'selesai' => 'Selesai',
+                'dibatalkan' => 'Dibatalkan'
+            ];
+
             $jadwalEvent->update(['status' => $request->status]);
 
-            return redirect()->back()
-                ->with('success', 'Status jadwal event berhasil diupdate.');
+            $message = 'Status event "' . $jadwalEvent->nama_event . '" berhasil diubah menjadi ' . $statusLabel[$request->status] . '!';
+
+            return redirect()->back()->with('success', $message);
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
@@ -171,10 +179,25 @@ class JadwalEventController extends Controller
         ]);
 
         try {
+            $jumlahAtletSebelum = $jadwalEvent->atlit()->count();
             $jadwalEvent->atlit()->sync($request->atlit_ids ?? []);
+            $jumlahAtletSesudah = count($request->atlit_ids ?? []);
+
+            $message = 'Daftar atlet untuk event "' . $jadwalEvent->nama_event . '" berhasil diperbarui! ';
+            $message .= 'Total atlet: ' . $jumlahAtletSesudah . ' atlet';
+
+            if ($jumlahAtletSebelum != $jumlahAtletSesudah) {
+                if ($jumlahAtletSesudah > $jumlahAtletSebelum) {
+                    $selisih = $jumlahAtletSesudah - $jumlahAtletSebelum;
+                    $message .= ' (+' . $selisih . ' atlet ditambahkan)';
+                } else {
+                    $selisih = $jumlahAtletSebelum - $jumlahAtletSesudah;
+                    $message .= ' (-' . $selisih . ' atlet dihapus)';
+                }
+            }
 
             return redirect()->route('jadwal-event.show', $jadwalEvent)
-                ->with('success', 'Daftar atlet berhasil diupdate.');
+                ->with('success', $message);
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal mengupdate daftar atlet: ' . $e->getMessage());

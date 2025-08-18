@@ -1,0 +1,321 @@
+/* File: public/css/kalender-custom.css */
+/* Custom CSS untuk memperbaiki tampilan kalender yang padat dengan events */
+
+/* Event Container Improvements */
+.fc-daygrid-day-events {
+    margin-top: 2px;
+    min-height: 20px;
+}
+
+.fc-daygrid-event-harness {
+    margin: 1px 2px;
+}
+
+/* Event Text Improvements */
+.fc-event-title {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    padding: 1px 4px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+/* Specific Event Type Styling */
+.fc-event.event-latihan {
+    background: linear-gradient(135deg, #4e73df, #2e59d9) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    margin: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.fc-event.event-pertandingan {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    margin: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.fc-event.event-seleksi {
+    background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+    border: none !important;
+    color: #212529 !important;
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    margin: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-weight: 600 !important;
+}
+
+.fc-event.event-ujicoba {
+    background: linear-gradient(135deg, #17a2b8, #138496) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    margin: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.fc-event.event-kejuaraan {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    margin: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Default event styling untuk yang belum dikategorikan */
+.fc-event:not(.event-latihan):not(.event-pertandingan):not(.event-seleksi):not(.event-ujicoba):not(.event-kejuaraan) {
+    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    margin: 1px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover Effects */
+.fc-event:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    z-index: 999 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Day Cell Improvements untuk hari yang padat */
+.fc-daygrid-day-frame {
+    position: relative;
+    min-height: 120px;
+}
+
+.fc-daygrid-day-events {
+    position: relative;
+    z-index: 1;
+}
+
+/* More Events Link Styling */
+.fc-daygrid-more-link {
+    background: #f8f9fc !important;
+    color: #4e73df !important;
+    border: 1px solid #e3e6f0 !important;
+    border-radius: 3px !important;
+    padding: 2px 6px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    margin: 1px 2px !important;
+    text-decoration: none !important;
+}
+
+.fc-daygrid-more-link:hover {
+    background: #4e73df !important;
+    color: white !important;
+    transform: scale(1.02);
+}
+
+/* Popover untuk More Events */
+.fc-popover {
+    background: white !important;
+    border: 1px solid #e3e6f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.fc-popover-header {
+    background: #f8f9fc !important;
+    color: #5a5c69 !important;
+    font-weight: 600 !important;
+    padding: 12px !important;
+    border-bottom: 1px solid #e3e6f0 !important;
+}
+
+.fc-popover-body {
+    padding: 10px !important;
+}
+
+/* Calendar Day Number Styling */
+.fc-daygrid-day-number {
+    color: #5a5c69 !important;
+    font-weight: 500 !important;
+    padding: 8px !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    background: #1cc88a !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    font-weight: 600 !important;
+}
+
+/* Weekend Styling */
+.fc-day-sat,
+.fc-day-sun {
+    background-color: rgba(220, 53, 69, 0.03) !important;
+}
+
+.fc-day-sat .fc-daygrid-day-number,
+.fc-day-sun .fc-daygrid-day-number {
+    color: #dc3545 !important;
+}
+
+/* Header Toolbar Improvements */
+.fc-header-toolbar {
+    background: #f8f9fc !important;
+    padding: 15px !important;
+    border-radius: 8px !important;
+    margin-bottom: 20px !important;
+    border: 1px solid #e3e6f0 !important;
+}
+
+.fc-toolbar-title {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #5a5c69 !important;
+    text-transform: capitalize !important;
+}
+
+/* Button Styling dalam Calendar */
+.fc-button-primary {
+    background-color: #4e73df !important;
+    border-color: #4e73df !important;
+    color: white !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    transition: all 0.15s ease-in-out !important;
+}
+
+.fc-button-primary:hover {
+    background-color: #2e59d9 !important;
+    border-color: #2e59d9 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.fc-button-primary:disabled {
+    background-color: #858796 !important;
+    border-color: #858796 !important;
+    opacity: 0.6 !important;
+}
+
+.fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #224abe !important;
+    border-color: #224abe !important;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125) !important;
+}
+
+/* Responsive Improvements untuk Mobile */
+@media (max-width: 768px) {
+    .fc-event-title {
+        font-size: 0.65rem !important;
+    }
+
+    .fc-daygrid-day-frame {
+        min-height: 100px;
+    }
+
+    .fc-daygrid-day-number {
+        padding: 4px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .fc-day-today .fc-daygrid-day-number {
+        width: 25px !important;
+        height: 25px !important;
+    }
+
+    .fc-header-toolbar {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+    .fc-toolbar-chunk {
+        margin: 5px 0 !important;
+    }
+
+    .fc-button {
+        font-size: 0.8rem !important;
+        padding: 6px 12px !important;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.calendar-loading .fc-event {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Custom Scrollbar untuk Calendar Container */
+.fc-scroller::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+    background: #4e73df;
+    border-radius: 6px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+    background: #2e59d9;
+}
+
+/* Tooltip Styling */
+[title] {
+    position: relative;
+}
+
+/* Print Styles */
+@media print {
+    .fc-event {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #000 !important;
+    }
+
+    .fc-button,
+    .fc-header-toolbar .fc-button {
+        display: none !important;
+    }
+}

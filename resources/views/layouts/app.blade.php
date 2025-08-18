@@ -19,6 +19,9 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.4/sweetalert2.min.css"
+        integrity="sha512-Nedhxx3wE5Vtf1ZVxN7QSpNPigYCwZDf8jiwzcV0PxCxm5uEpEtqxGQrz5IR5KkaypLyu3GU1qOgWMH9wI3uXQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     @livewireStyles
     @stack('styles')
 </head>
@@ -103,10 +106,11 @@
     <script src="{{ asset('template/js/demo/chart-pie-demo.js') }}"></script>
 
     <script src="{{ asset('template/js/chart-manager.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('sweetalert::alert')
+    <script src="{{ asset('template/js/sweetalert-helper.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.4/sweetalert2.min.js"
+        integrity="sha512-2DPbgJGbxWm9uZP8ED9GtPgSX20Q9Pr4NhI4DbLG8NxdN+l9r5iK79ytdBzCerSJpYi/RbLIu1emYyt7T8pVeQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    {{-- <script src="{{ mix('js/app.js') }}"></script> --}}
 
 
     @livewireScripts

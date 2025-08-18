@@ -48,17 +48,23 @@ class KategoriAtlitTable extends Component
         'filterStatus' => ['except' => ''],
     ];
 
-    public function updatingSearch()
+    // Fix untuk filter - menggunakan updatedProperty untuk real-time filtering
+    public function updatedSearch()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterCabor()
+    public function updatedFilterCabor()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterStatus()
+    public function updatedFilterStatus()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedPerPage()
     {
         $this->resetPage();
     }
@@ -107,12 +113,16 @@ class KategoriAtlitTable extends Component
 
         $this->closeForm();
         session()->flash('success', 'Kategori atlit berhasil ditambahkan.');
+        $this->dispatch('showAlert', [
+            'type' => 'success',
+            'title' => 'Berhasil!',
+            'message' => 'Kategori atlit berhasil ditambahkan.'
+        ]);
     }
 
     public function edit($id)
     {
         $kategori = KategoriAtlit::find($id);
-
         if ($kategori) {
             $this->kategoriId = $kategori->id;
             $this->cabang_olahraga_id = $kategori->cabang_olahraga_id;
@@ -129,7 +139,6 @@ class KategoriAtlitTable extends Component
         $this->validate();
 
         $kategori = KategoriAtlit::find($this->kategoriId);
-
         if ($kategori) {
             $kategori->update([
                 'cabang_olahraga_id' => $this->cabang_olahraga_id,
@@ -140,22 +149,51 @@ class KategoriAtlitTable extends Component
 
             $this->closeForm();
             session()->flash('success', 'Kategori atlit berhasil diperbarui.');
+            $this->dispatch('showAlert', [
+                'type' => 'success',
+                'title' => 'Berhasil!',
+                'message' => 'Kategori atlit berhasil diperbarui.'
+            ]);
         }
     }
 
-    public function delete($id)
+    // Method untuk konfirmasi delete
+    public function confirmDelete($id)
     {
         $kategori = KategoriAtlit::find($id);
-
         if ($kategori) {
-            // Cek apakah kategori masih digunakan oleh atlit
+            // Cek apakah kategori masih digunakan
             if ($kategori->atlit()->count() > 0) {
-                session()->flash('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh atlit.');
+                $this->dispatch('showAlert', [
+                    'type' => 'warning',
+                    'title' => 'Peringatan!',
+                    'message' => 'Kategori tidak dapat dihapus karena masih digunakan oleh atlit.'
+                ]);
                 return;
             }
 
+            $this->dispatch('confirmDelete', [
+                'id' => $id,
+                'title' => 'Hapus Kategori',
+                'text' => 'Apakah Anda yakin ingin menghapus kategori "' . $kategori->nama_kategori . '"?',
+                'confirmButtonText' => 'Ya, Hapus!',
+                'cancelButtonText' => 'Batal'
+            ]);
+        }
+    }
+
+    // Method untuk menghapus data setelah konfirmasi
+    public function delete($id)
+    {
+        $kategori = KategoriAtlit::find($id);
+        if ($kategori) {
             $kategori->delete();
             session()->flash('success', 'Kategori atlit berhasil dihapus.');
+            $this->dispatch('showAlert', [
+                'type' => 'success',
+                'title' => 'Berhasil!',
+                'message' => 'Kategori atlit berhasil dihapus.'
+            ]);
         }
     }
 
@@ -163,8 +201,15 @@ class KategoriAtlitTable extends Component
     {
         $query = KategoriAtlit::with('cabangOlahraga');
 
+        // Fix untuk search - menggunakan LIKE untuk pencarian yang lebih fleksibel
         if ($this->search) {
-            $query->search($this->search);
+            $query->where(function ($q) {
+                $q->where('nama_kategori', 'like', '%' . $this->search . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('cabangOlahraga', function ($subQuery) {
+                        $subQuery->where('nama_cabang', 'like', '%' . $this->search . '%');
+                    });
+            });
         }
 
         if ($this->filterCabor) {

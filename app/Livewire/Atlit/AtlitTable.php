@@ -11,8 +11,6 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Storage;
 
 class AtlitTable extends Component
-
-
 {
     use WithPagination;
 
@@ -33,28 +31,35 @@ class AtlitTable extends Component
         'filterStatus' => ['except' => ''],
     ];
 
-    public function updatingSearch()
+    // Fix: Gunakan updatedPropertyName untuk reactive updates
+    public function updatedSearch()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterKlub()
+    public function updatedFilterKlub()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterCabor()
+    public function updatedFilterCabor()
     {
         $this->resetPage();
         $this->filterKategori = ''; // Reset kategori ketika cabor berubah
     }
 
-    public function updatingFilterKategori()
+    public function updatedFilterKategori()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterStatus()
+    public function updatedFilterStatus()
+    {
+        $this->resetPage();
+    }
+
+    // Fix: Tambahkan method untuk perPage
+    public function updatedPerPage()
     {
         $this->resetPage();
     }
@@ -71,21 +76,30 @@ class AtlitTable extends Component
 
     public function delete($id)
     {
-        $atlit = Atlit::find($id);
+        try {
+            $atlit = Atlit::find($id);
 
-        if ($atlit) {
-            // Hapus foto jika ada
-            if ($atlit->foto) {
-                Storage::disk('public')->delete('atlit/foto/' . $atlit->foto);
+            if ($atlit) {
+                // Hapus foto jika ada
+                if ($atlit->foto) {
+                    Storage::disk('public')->delete('atlit/foto/' . $atlit->foto);
+                }
+
+                // Hapus user terkait jika ada
+                if ($atlit->user_id) {
+                    $user = \App\Models\User::find($atlit->user_id);
+                    if ($user) {
+                        $user->delete();
+                    }
+                }
+
+                $atlit->delete();
+                session()->flash('success', 'Data atlit berhasil dihapus.');
+            } else {
+                session()->flash('error', 'Data atlit tidak ditemukan.');
             }
-
-            // Hapus user terkait jika ada
-            if ($atlit->user_id) {
-                \App\Models\User::find($atlit->user_id)->delete();
-            }
-
-            $atlit->delete();
-            session()->flash('success', 'Data atlit berhasil dihapus.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }
 
@@ -93,25 +107,29 @@ class AtlitTable extends Component
     {
         $query = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit']);
 
-        // Apply search
-        if ($this->search) {
-            $query->search($this->search);
+        // Apply search - pastikan method search() ada di Model Atlit
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('nama_lengkap', 'LIKE', '%' . $this->search . '%')
+                    ->orWhere('nik', 'LIKE', '%' . $this->search . '%')
+                    ->orWhere('email', 'LIKE', '%' . $this->search . '%');
+            });
         }
 
-        // Apply filters
-        if ($this->filterKlub) {
+        // Apply filters dengan pengecekan yang lebih robust
+        if (!empty($this->filterKlub)) {
             $query->where('klub_id', $this->filterKlub);
         }
 
-        if ($this->filterCabor) {
+        if (!empty($this->filterCabor)) {
             $query->where('cabang_olahraga_id', $this->filterCabor);
         }
 
-        if ($this->filterKategori) {
+        if (!empty($this->filterKategori)) {
             $query->where('kategori_atlit_id', $this->filterKategori);
         }
 
-        if ($this->filterStatus) {
+        if (!empty($this->filterStatus)) {
             $query->where('status', $this->filterStatus);
         }
 
@@ -122,7 +140,7 @@ class AtlitTable extends Component
         $cabangOlahraga = Cabor::aktif()->orderBy('nama_cabang')->get();
         $kategoriAtlit = collect();
 
-        if ($this->filterCabor) {
+        if (!empty($this->filterCabor)) {
             $kategoriAtlit = KategoriAtlit::where('cabang_olahraga_id', $this->filterCabor)
                 ->aktif()
                 ->orderBy('nama_kategori')

@@ -57,7 +57,6 @@ class KalenderKegiatanController extends Controller
             $events = $events->merge($eventEvents);
         }
 
-        // Filter berdasarkan cabang olahraga jika dipilih
         if ($request->filled('cabang_olahraga_id')) {
             $events = $events->filter(function ($event) use ($request) {
                 // Implementasi filter berdasarkan cabang olahraga

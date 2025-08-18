@@ -7,7 +7,6 @@
             </button>
         </div>
     @endif
-
     @if (session()->has('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
@@ -20,10 +19,11 @@
     <!-- Filter Section -->
     <div class="row mb-3">
         <div class="col-md-3">
-            <input wire:model="search" type="text" class="form-control" placeholder="Cari atlit...">
+            <input wire:model.live.debounce.300ms="search" type="text" class="form-control"
+                placeholder="Cari atlit...">
         </div>
         <div class="col-md-2">
-            <select wire:model="filterKlub" class="form-control">
+            <select wire:model.live="filterKlub" class="form-control">
                 <option value="">Semua Klub</option>
                 @foreach ($klub as $k)
                     <option value="{{ $k->id }}">{{ $k->nama_klub }}</option>
@@ -31,7 +31,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            <select wire:model="filterCabor" class="form-control">
+            <select wire:model.live="filterCabor" class="form-control">
                 <option value="">Semua Cabor</option>
                 @foreach ($cabangOlahraga as $cabor)
                     <option value="{{ $cabor->id }}">{{ $cabor->nama_cabang }}</option>
@@ -39,7 +39,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            <select wire:model="filterKategori" class="form-control">
+            <select wire:model.live="filterKategori" class="form-control">
                 <option value="">Semua Kategori</option>
                 @foreach ($kategoriAtlit as $kategori)
                     <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
@@ -47,7 +47,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            <select wire:model="filterStatus" class="form-control">
+            <select wire:model.live="filterStatus" class="form-control">
                 <option value="">Semua Status</option>
                 <option value="aktif">Aktif</option>
                 <option value="nonaktif">Nonaktif</option>
@@ -84,8 +84,15 @@
                     <tr>
                         <td>{{ $atlit->firstItem() + $index }}</td>
                         <td class="text-center">
-                            <img src="{{ $item->foto_url }}" alt="Foto {{ $item->nama_lengkap }}" class="img-thumbnail"
-                                style="width: 50px; height: 50px; object-fit: cover;">
+                            @if ($item->foto_url)
+                                <img src="{{ $item->foto_url }}" alt="Foto {{ $item->nama_lengkap }}"
+                                    class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                            @else
+                                <div class="bg-secondary d-flex align-items-center justify-content-center"
+                                    style="width: 50px; height: 50px; border-radius: 4px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <strong>{{ $item->nama_lengkap }}</strong>
@@ -95,19 +102,19 @@
                         </td>
                         <td>{{ $item->nik }}</td>
                         <td>
-                            <span class="badge badge-{{ $item->jenis_kelamin == 'L' ? 'primary' : 'pink' }}">
+                            <span class="badge badge-{{ $item->jenis_kelamin == 'L' ? 'primary' : 'warning' }}">
                                 {{ $item->jenis_kelamin_lengkap }}
                             </span>
                         </td>
                         <td>{{ $item->umur }} tahun</td>
                         <td>
-                            <small>{{ $item->klub->nama_klub }}</small>
+                            <small>{{ $item->klub->nama_klub ?? '-' }}</small>
                         </td>
                         <td>
-                            <small>{{ $item->cabangOlahraga->nama_cabang }}</small>
+                            <small>{{ $item->cabangOlahraga->nama_cabang ?? '-' }}</small>
                         </td>
                         <td>
-                            <small>{{ $item->kategoriAtlit->nama_kategori }}</small>
+                            <small>{{ $item->kategoriAtlit->nama_kategori ?? '-' }}</small>
                         </td>
                         <td>{!! $item->status_badge !!}</td>
                         <td>
@@ -121,8 +128,7 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button wire:click="delete({{ $item->id }})" class="btn btn-danger btn-sm"
-                                    title="Hapus"
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                    title="Hapus" wire:confirm="Apakah Anda yakin ingin menghapus data ini?">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -133,7 +139,13 @@
                         <td colspan="11" class="text-center py-4">
                             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">Tidak ada data atlit</h5>
-                            <p class="text-muted">Belum ada data atlit yang tersimpan.</p>
+                            <p class="text-muted">
+                                @if ($search || $filterKlub || $filterCabor || $filterKategori || $filterStatus)
+                                    Tidak ada data yang sesuai dengan filter yang dipilih.
+                                @else
+                                    Belum ada data atlit yang tersimpan.
+                                @endif
+                            </p>
                         </td>
                     </tr>
                 @endforelse
@@ -144,7 +156,7 @@
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center mt-3">
         <div>
-            <select wire:model="perPage" class="form-control form-control-sm" style="width: auto;">
+            <select wire:model.live="perPage" class="form-control form-control-sm" style="width: auto;">
                 <option value="5">5 per halaman</option>
                 <option value="10">10 per halaman</option>
                 <option value="25">25 per halaman</option>

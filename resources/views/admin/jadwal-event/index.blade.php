@@ -23,6 +23,57 @@
             padding: 20px;
             margin-bottom: 20px;
         }
+
+        /* Fix pagination styling */
+        .pagination {
+            margin-bottom: 0;
+            justify-content: flex-end;
+        }
+
+        .pagination .page-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+
+        /* Flash Messages Styling */
+        .alert {
+            border: none;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background-color: #d1edff;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background-color: #cce7ff;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert .fas {
+            margin-right: 8px;
+        }
     </style>
 @endpush
 
@@ -38,6 +89,47 @@
                 </a>
             </div>
         </div>
+
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <strong>Berhasil!</strong> {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Error!</strong> {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        @if (session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Peringatan!</strong> {{ session('warning') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        @if (session('info'))
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Info!</strong> {{ session('info') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
         <!-- Filter Section -->
         <div class="filter-section">
@@ -191,13 +283,13 @@
                                                     <div class="dropdown-divider"></div>
                                                     @if ($event->status !== 'selesai')
                                                         <button class="dropdown-item"
-                                                            onclick="updateStatus('{{ $event->id }}', 'selesai')">
+                                                            onclick="updateStatus('{{ $event->id }}', 'selesai', 'Selesaikan Event')">
                                                             <i class="fas fa-check text-success"></i> Selesaikan
                                                         </button>
                                                     @endif
                                                     @if ($event->status !== 'dibatalkan')
                                                         <button class="dropdown-item"
-                                                            onclick="updateStatus('{{ $event->id }}', 'dibatalkan')">
+                                                            onclick="updateStatus('{{ $event->id }}', 'dibatalkan', 'Batalkan Event')">
                                                             <i class="fas fa-times text-danger"></i> Batalkan
                                                         </button>
                                                     @endif
@@ -216,15 +308,17 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="text-muted">
-                                Menampilkan {{ $jadwalEvent->firstItem() }} - {{ $jadwalEvent->lastItem() }}
-                                dari {{ $jadwalEvent->total() }} data
-                            </p>
+                    <div class="row align-items-center mt-3">
+                        <div class="col-sm-12 col-md-5">
+                            <div class="dataTables_info">
+                                Menampilkan {{ $jadwalEvent->firstItem() }} sampai {{ $jadwalEvent->lastItem() }}
+                                dari {{ $jadwalEvent->total() }} entri
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            {{ $jadwalEvent->links() }}
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers">
+                                {{ $jadwalEvent->appends(request()->query())->links('pagination::bootstrap-4') }}
+                            </div>
                         </div>
                     </div>
                 @else
@@ -257,22 +351,50 @@
 
 @push('scripts')
     <script>
-        function updateStatus(eventId, status) {
-            if (confirm('Apakah Anda yakin ingin mengubah status event ini?')) {
-                const form = document.getElementById('statusForm');
-                form.action = `/jadwal-event/${eventId}/status`;
-                document.getElementById('statusInput').value = status;
-                form.submit();
-            }
+        function updateStatus(eventId, status, actionText) {
+            let title = 'Konfirmasi ' + actionText;
+            let text = 'Apakah Anda yakin ingin ' + actionText.toLowerCase() + ' ini?';
+            let icon = status === 'selesai' ? 'success' : 'warning';
+            let confirmButtonColor = status === 'selesai' ? '#28a745' : '#ffc107';
+
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: confirmButtonColor,
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, ' + actionText + '!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('statusForm');
+                    form.action = `/jadwal-event/${eventId}/status`;
+                    document.getElementById('statusInput').value = status;
+                    form.submit();
+                }
+            });
         }
 
         function confirmDelete(eventId, eventName) {
-            if (confirm(
-                `Apakah Anda yakin ingin menghapus event "${eventName}"?\n\nTindakan ini tidak dapat dibatalkan!`)) {
-                const form = document.getElementById('deleteForm');
-                form.action = `/jadwal-event/${eventId}`;
-                form.submit();
-            }
+            Swal.fire({
+                title: 'Hapus Event?',
+                html: `Apakah Anda yakin ingin menghapus event<br><strong>"${eventName}"</strong>?<br><br><small class="text-muted">Tindakan ini tidak dapat dibatalkan!</small>`,
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('deleteForm');
+                    form.action = `/jadwal-event/${eventId}`;
+                    form.submit();
+                }
+            });
         }
 
         // Auto submit form on filter change
@@ -282,6 +404,17 @@
                 select.addEventListener('change', function() {
                     this.form.submit();
                 });
+            });
+
+            // Auto hide flash messages after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert && !alert.classList.contains('fade')) {
+                        alert.classList.add('fade');
+                        setTimeout(() => alert.remove(), 150);
+                    }
+                }, 5000);
             });
         });
     </script>

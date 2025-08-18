@@ -7,7 +7,6 @@
             </button>
         </div>
     @endif
-
     @if (session()->has('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
@@ -28,10 +27,11 @@
     <!-- Filter Section -->
     <div class="row mb-3">
         <div class="col-md-4">
-            <input wire:model="search" type="text" class="form-control" placeholder="Cari kategori...">
+            <input wire:model.live.debounce.300ms="search" type="text" class="form-control"
+                placeholder="Cari kategori...">
         </div>
         <div class="col-md-3">
-            <select wire:model="filterCabor" class="form-control">
+            <select wire:model.live="filterCabor" class="form-control">
                 <option value="">Semua Cabang Olahraga</option>
                 @foreach ($cabangOlahraga as $cabor)
                     <option value="{{ $cabor->id }}">{{ $cabor->nama_cabang }}</option>
@@ -39,7 +39,7 @@
             </select>
         </div>
         <div class="col-md-3">
-            <select wire:model="filterStatus" class="form-control">
+            <select wire:model.live="filterStatus" class="form-control">
                 <option value="">Semua Status</option>
                 <option value="aktif">Aktif</option>
                 <option value="nonaktif">Nonaktif</option>
@@ -94,7 +94,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="nama_kategori">Nama Kategori <span class="text-danger">*</span></label>
                         <input wire:model="nama_kategori" type="text"
@@ -104,7 +103,6 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
                     <div class="form-group">
                         <label for="deskripsi">Deskripsi</label>
                         <textarea wire:model="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="3"
@@ -113,7 +111,6 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> {{ $editMode ? 'Update' : 'Simpan' }}
@@ -158,9 +155,8 @@
                                     title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button wire:click="delete({{ $item->id }})" class="btn btn-danger btn-sm"
-                                    title="Hapus"
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')">
+                                <button wire:click="confirmDelete({{ $item->id }})" class="btn btn-danger btn-sm"
+                                    title="Hapus">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -182,7 +178,7 @@
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center mt-3">
         <div>
-            <select wire:model="perPage" class="form-control form-control-sm" style="width: auto;">
+            <select wire:model.live="perPage" class="form-control form-control-sm" style="width: auto;">
                 <option value="5">5 per halaman</option>
                 <option value="10">10 per halaman</option>
                 <option value="25">25 per halaman</option>
@@ -194,3 +190,58 @@
         </div>
     </div>
 </div>
+
+<!-- SweetAlert2 Scripts -->
+{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:init', function() {
+            // Listen for confirm delete event
+            Livewire.on('confirmDelete', (data) => {
+                Swal.fire({
+                    title: data.title,
+                    text: data.text,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: data.confirmButtonText,
+                    cancelButtonText: data.cancelButtonText,
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User confirmed, proceed with deletion
+                        @this.call('delete', data.id);
+                    }
+                    // If cancelled, nothing happens (this fixes the bug where delete still executed)
+                });
+            });
+
+            Livewire.on('showAlert', (data) => {
+                Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: data.type,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            });
+        });
+    </script>
+@endpush
+
+@push('styles')
+    <style>
+        .swal2-popup {
+            font-size: 0.875rem;
+        }
+
+        .swal2-toast {
+            font-size: 0.875rem;
+        }
+    </style>
+@endpush

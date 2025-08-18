@@ -110,7 +110,8 @@ Route::middleware([
     // Routes untuk Kalender Kegiatan
     Route::get('/kalender-kegiatan', [KalenderKegiatanController::class, 'index'])->name('kalender-kegiatan');
     Route::get('/kalender-kegiatan/export', [KalenderKegiatanController::class, 'exportCalendar'])->name('kalender-kegiatan.export');
-
+    Route::get('/kalender-kegiatan/filter', [KalenderKegiatanController::class, 'filterEvents'])->name('kalender-kegiatan.filter');
+    Route::get('/kalender-kegiatan/detail', [KalenderKegiatanController::class, 'getEventDetail'])->name('kalender-kegiatan.detail');
     // API Routes untuk AJAX calls
     Route::prefix('api')->name('api.')->group(function () {
 
