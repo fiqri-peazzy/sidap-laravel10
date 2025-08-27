@@ -96,13 +96,10 @@ class JadwalEventController extends Controller
 
             $jadwalEvent->update($request->all());
 
-            // Update atlet yang terlibat
             if ($request->has('atlit_ids')) {
                 $jadwalEvent->atlit()->sync($request->atlit_ids ?? []);
             }
-
             DB::commit();
-
             return redirect()->route('jadwal-event.index')
                 ->with('success', 'Event "' . $jadwalEvent->nama_event . '" berhasil diperbarui!');
         } catch (\Exception $e) {
