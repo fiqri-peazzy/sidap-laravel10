@@ -42,24 +42,25 @@
                 <h1 class="h3 mb-0 text-gray-800">Edit Jadwal Event</h1>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('jadwal-event.index') }}">Jadwal Event</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.jadwal-event.index') }}">Jadwal Event</a></li>
                         <li class="breadcrumb-item"><a
-                                href="{{ route('jadwal-event.show', $jadwalEvent) }}">{{ $jadwalEvent->nama_event }}</a></li>
+                                href="{{ route('admin.jadwal-event.show', $jadwalEvent) }}">{{ $jadwalEvent->nama_event }}</a>
+                        </li>
                         <li class="breadcrumb-item active">Edit</li>
                     </ol>
                 </nav>
             </div>
             <div>
-                <a href="{{ route('jadwal-event.show', $jadwalEvent) }}" class="btn btn-sm btn-info mr-2">
+                <a href="{{ route('admin.jadwal-event.show', $jadwalEvent) }}" class="btn btn-sm btn-info mr-2">
                     <i class="fas fa-eye"></i> Detail
                 </a>
-                <a href="{{ route('jadwal-event.index') }}" class="btn btn-sm btn-secondary">
+                <a href="{{ route('admin.jadwal-event.index') }}" class="btn btn-sm btn-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
             </div>
         </div>
 
-        <form action="{{ route('jadwal-event.update', $jadwalEvent) }}" method="POST">
+        <form action="{{ route('admin.jadwal-event.update', $jadwalEvent) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="row">
@@ -240,7 +241,7 @@
                                     @endforeach
                                 </div>
                                 <div class="mt-3">
-                                    <a href="{{ route('jadwal-event.manage-atlit', $jadwalEvent) }}"
+                                    <a href="{{ route('admin.jadwal-event.manage-atlit', $jadwalEvent) }}"
                                         class="btn btn-sm btn-primary btn-block">
                                         <i class="fas fa-edit"></i> Kelola Atlet
                                     </a>
@@ -249,7 +250,7 @@
                                 <div class="text-center py-3">
                                     <i class="fas fa-users text-muted mb-2"></i>
                                     <p class="text-muted mb-3">Belum ada atlet</p>
-                                    <a href="{{ route('jadwal-event.manage-atlit', $jadwalEvent) }}"
+                                    <a href="{{ route('admin.jadwal-event.manage-atlit', $jadwalEvent) }}"
                                         class="btn btn-sm btn-primary">
                                         <i class="fas fa-plus"></i> Tambah Atlet
                                     </a>
@@ -269,10 +270,11 @@
                                 <button type="submit" class="btn btn-warning btn-block">
                                     <i class="fas fa-save"></i> Update Event
                                 </button>
-                                <a href="{{ route('jadwal-event.show', $jadwalEvent) }}" class="btn btn-info btn-block">
+                                <a href="{{ route('admin.jadwal-event.show', $jadwalEvent) }}"
+                                    class="btn btn-info btn-block">
                                     <i class="fas fa-eye"></i> Lihat Detail
                                 </a>
-                                <a href="{{ route('jadwal-event.index') }}" class="btn btn-secondary btn-block">
+                                <a href="{{ route('admin.jadwal-event.index') }}" class="btn btn-secondary btn-block">
                                     <i class="fas fa-times"></i> Batal
                                 </a>
                             </div>

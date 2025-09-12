@@ -93,7 +93,7 @@ class KalenderKegiatanController extends Controller
                 'catatan' => $jadwal->catatan ?: '-',
                 'status' => $jadwal->status,
                 'duration' => $jadwal->durasi,
-                'detail_url' => route('jadwal-latihan.show', $jadwal->id)
+                'detail_url' => route('admin.jadwal-latihan.show', $jadwal->id)
             ]);
         } elseif ($type === 'event') {
             $event = \App\Models\JadwalEvent::with(['cabangOlahraga', 'atlit'])
@@ -116,7 +116,7 @@ class KalenderKegiatanController extends Controller
                 'status' => $event->status,
                 'duration' => $event->durasi_event,
                 'jumlah_atlet' => $event->jumlah_atlet,
-                'detail_url' => route('jadwal-event.show', $event->id)
+                'detail_url' => route('admin.jadwal-event.show', $event->id)
             ]);
         }
 

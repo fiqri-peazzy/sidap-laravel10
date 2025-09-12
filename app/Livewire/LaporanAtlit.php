@@ -77,7 +77,7 @@ class LaporanAtlit extends Component
         // Filter parameter kosong
         $params = array_filter($params);
 
-        $url = route('laporan.atlit.cetak', $params);
+        $url = route('admin.laporan.atlit.cetak', $params);
         return redirect()->to($url);
     }
 

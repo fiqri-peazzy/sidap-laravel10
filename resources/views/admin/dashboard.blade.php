@@ -101,8 +101,9 @@
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                             aria-labelledby="dropdownMenuLink">
                             <div class="dropdown-header">Aksi:</div>
-                            <a class="dropdown-item" href="{{ route('klub.index') }}">Lihat Semua Klub</a>
-                            <a class="dropdown-item" href="{{ route('cabang-olahraga.index') }}">Lihat Cabang Olahraga</a>
+                            <a class="dropdown-item" href="{{ route('admin.klub.index') }}">Lihat Semua Klub</a>
+                            <a class="dropdown-item" href="{{ route('admin.cabang-olahraga.index') }}">Lihat Cabang
+                                Olahraga</a>
                         </div>
                     </div>
                 </div>
@@ -236,13 +237,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <a href="{{ route('cabang-olahraga.index') }}" class="btn btn-primary btn-block">
+                            <a href="{{ route('admin.cabang-olahraga.index') }}" class="btn btn-primary btn-block">
                                 <i class="fas fa-running mr-2"></i>
                                 Kelola Cabang Olahraga
                             </a>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <a href="{{ route('klub.index') }}" class="btn btn-info btn-block">
+                            <a href="{{ route('admin.klub.index') }}" class="btn btn-info btn-block">
                                 <i class="fas fa-users mr-2"></i>
                                 Kelola Klub
                             </a>

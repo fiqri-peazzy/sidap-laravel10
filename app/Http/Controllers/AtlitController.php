@@ -47,7 +47,7 @@ class AtlitController extends Controller
             $atlit->createUser();
         }
 
-        return redirect()->route('atlit.index')->with('success', 'Data atlit berhasil ditambahkan.');
+        return redirect()->route('admin.atlit.index')->with('success', 'Data atlit berhasil ditambahkan.');
     }
 
     public function show(Atlit $atlit)
@@ -98,7 +98,7 @@ class AtlitController extends Controller
             ]);
         }
 
-        return redirect()->route('atlit.index')->with('success', 'Data atlit berhasil diperbarui.');
+        return redirect()->route('admin.atlit.index')->with('success', 'Data atlit berhasil diperbarui.');
     }
 
     public function destroy(Atlit $atlit)
@@ -115,7 +115,7 @@ class AtlitController extends Controller
 
         $atlit->delete();
 
-        return redirect()->route('atlit.index')->with('success', 'Data atlit berhasil dihapus.');
+        return redirect()->route('admin.atlit.index')->with('success', 'Data atlit berhasil dihapus.');
     }
 
     public function getKategori($cabangOlahragaId)

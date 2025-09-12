@@ -83,7 +83,7 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Jadwal Event</h1>
             <div>
-                <a href="{{ route('jadwal-event.create') }}"
+                <a href="{{ route('admin.jadwal-event.create') }}"
                     class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                     <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Event
                 </a>
@@ -133,7 +133,7 @@
 
         <!-- Filter Section -->
         <div class="filter-section">
-            <form method="GET" action="{{ route('jadwal-event.index') }}">
+            <form method="GET" action="{{ route('admin.jadwal-event.index') }}">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
@@ -192,7 +192,7 @@
                                 <button type="submit" class="btn btn-primary mr-2">
                                     <i class="fas fa-search"></i> Filter
                                 </button>
-                                <a href="{{ route('jadwal-event.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('admin.jadwal-event.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Reset
                                 </a>
                             </div>
@@ -269,15 +269,15 @@
                                                 <div class="dropdown-menu"
                                                     aria-labelledby="dropdownMenuButton{{ $event->id }}">
                                                     <a class="dropdown-item"
-                                                        href="{{ route('jadwal-event.show', $event) }}">
+                                                        href="{{ route('admin.jadwal-event.show', $event) }}">
                                                         <i class="fas fa-eye text-info"></i> Detail
                                                     </a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('jadwal-event.edit', $event) }}">
+                                                        href="{{ route('admin.jadwal-event.edit', $event) }}">
                                                         <i class="fas fa-edit text-warning"></i> Edit
                                                     </a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('jadwal-event.manage-atlit', $event) }}">
+                                                        href="{{ route('admin.jadwal-event.manage-atlit', $event) }}">
                                                         <i class="fas fa-users text-primary"></i> Kelola Atlet
                                                     </a>
                                                     <div class="dropdown-divider"></div>
@@ -326,7 +326,7 @@
                         <i class="fas fa-calendar-times fa-5x text-muted mb-3"></i>
                         <h5 class="text-muted">Tidak ada jadwal event</h5>
                         <p class="text-muted">Belum ada jadwal event yang dibuat.</p>
-                        <a href="{{ route('jadwal-event.create') }}" class="btn btn-primary">
+                        <a href="{{ route('admin.jadwal-event.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Tambah Event Pertama
                         </a>
                     </div>

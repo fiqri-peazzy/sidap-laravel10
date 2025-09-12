@@ -30,12 +30,13 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Tambah Jadwal Event</h1>
-            <a href="{{ route('jadwal-event.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <a href="{{ route('admin.jadwal-event.index') }}"
+                class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
                 <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
             </a>
         </div>
 
-        <form action="{{ route('jadwal-event.store') }}" method="POST">
+        <form action="{{ route('admin.jadwal-event.store') }}" method="POST">
             @csrf
             <div class="row">
                 <div class="col-lg-8">
@@ -211,7 +212,7 @@
                                 <button type="submit" class="btn btn-primary btn-block">
                                     <i class="fas fa-save"></i> Simpan Event
                                 </button>
-                                <a href="{{ route('jadwal-event.index') }}" class="btn btn-secondary btn-block">
+                                <a href="{{ route('admin.jadwal-event.index') }}" class="btn btn-secondary btn-block">
                                     <i class="fas fa-times"></i> Batal
                                 </a>
                             </div>

@@ -37,19 +37,19 @@
                 <h1 class="h3 mb-0 text-gray-800">Detail Jadwal Event</h1>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('jadwal-event.index') }}">Jadwal Event</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.jadwal-event.index') }}">Jadwal Event</a></li>
                         <li class="breadcrumb-item active">{{ $jadwalEvent->nama_event }}</li>
                     </ol>
                 </nav>
             </div>
             <div>
-                <a href="{{ route('jadwal-event.edit', $jadwalEvent) }}" class="btn btn-sm btn-warning mr-2">
+                <a href="{{ route('admin.jadwal-event.edit', $jadwalEvent) }}" class="btn btn-sm btn-warning mr-2">
                     <i class="fas fa-edit"></i> Edit
                 </a>
-                <a href="{{ route('jadwal-event.manage-atlit', $jadwalEvent) }}" class="btn btn-sm btn-primary mr-2">
+                <a href="{{ route('admin.jadwal-event.manage-atlit', $jadwalEvent) }}" class="btn btn-sm btn-primary mr-2">
                     <i class="fas fa-users"></i> Kelola Atlet
                 </a>
-                <a href="{{ route('jadwal-event.index') }}" class="btn btn-sm btn-secondary">
+                <a href="{{ route('admin.jadwal-event.index') }}" class="btn btn-sm btn-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
             </div>
@@ -160,7 +160,7 @@
                         <h6 class="m-0 font-weight-bold text-primary">Daftar Atlet Peserta</h6>
                         <div>
                             <span class="badge badge-info">{{ $jadwalEvent->jumlah_atlet }} Atlet</span>
-                            <a href="{{ route('jadwal-event.manage-atlit', $jadwalEvent) }}"
+                            <a href="{{ route('admin.jadwal-event.manage-atlit', $jadwalEvent) }}"
                                 class="btn btn-sm btn-primary ml-2">
                                 <i class="fas fa-edit"></i> Kelola
                             </a>
@@ -203,7 +203,8 @@
                                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">Belum Ada Atlet Terdaftar</h5>
                                 <p class="text-muted">Belum ada atlet yang terdaftar untuk mengikuti event ini.</p>
-                                <a href="{{ route('jadwal-event.manage-atlit', $jadwalEvent) }}" class="btn btn-primary">
+                                <a href="{{ route('admin.jadwal-event.manage-atlit', $jadwalEvent) }}"
+                                    class="btn btn-primary">
                                     <i class="fas fa-plus"></i> Tambah Atlet
                                 </a>
                             </div>
@@ -238,10 +239,11 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a href="{{ route('jadwal-event.edit', $jadwalEvent) }}" class="btn btn-warning btn-block">
+                            <a href="{{ route('admin.jadwal-event.edit', $jadwalEvent) }}"
+                                class="btn btn-warning btn-block">
                                 <i class="fas fa-edit"></i> Edit Event
                             </a>
-                            <a href="{{ route('jadwal-event.manage-atlit', $jadwalEvent) }}"
+                            <a href="{{ route('admin.jadwal-event.manage-atlit', $jadwalEvent) }}"
                                 class="btn btn-primary btn-block">
                                 <i class="fas fa-users"></i> Kelola Atlet
                             </a>
@@ -301,7 +303,7 @@
     </div>
 
     <!-- Form untuk update status -->
-    <form id="statusForm" method="POST" action="{{ route('jadwal-event.update-status', $jadwalEvent) }}"
+    <form id="statusForm" method="POST" action="{{ route('admin.jadwal-event.update-status', $jadwalEvent) }}"
         style="display: none;">
         @csrf
         @method('PATCH')
@@ -309,7 +311,7 @@
     </form>
 
     <!-- Form untuk delete -->
-    <form id="deleteForm" method="POST" action="{{ route('jadwal-event.destroy', $jadwalEvent) }}"
+    <form id="deleteForm" method="POST" action="{{ route('admin.jadwal-event.destroy', $jadwalEvent) }}"
         style="display: none;">
         @csrf
         @method('DELETE')

@@ -124,10 +124,10 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Detail Atlit</h1>
             <div>
-                <a href="{{ route('atlit.edit', $atlit->id) }}" class="btn btn-warning btn-sm">
+                <a href="{{ route('admin.atlit.edit', $atlit->id) }}" class="btn btn-warning btn-sm">
                     <i class="fas fa-edit"></i> Edit
                 </a>
-                <a href="{{ route('atlit.index') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('admin.atlit.index') }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
             </div>

@@ -11,10 +11,10 @@
             <p class="mb-0 text-gray-600 small mt-1">Sistem Informasi Data Atlit PPLP Provinsi Gorontalo</p>
         </div>
         <div class="btn-group shadow-sm">
-            <a href="{{ route('jadwal-latihan.create') }}" class="btn btn-success btn-sm">
+            <a href="{{ route('admin.jadwal-latihan.create') }}" class="btn btn-success btn-sm">
                 <i class="fas fa-plus fa-sm mr-1"></i> Jadwal Latihan
             </a>
-            <a href="{{ route('jadwal-event.create') }}" class="btn btn-primary btn-sm">
+            <a href="{{ route('admin.jadwal-event.create') }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus fa-sm mr-1"></i> Jadwal Event
             </a>
         </div>

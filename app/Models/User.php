@@ -27,6 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'atlit_id',
     ];
 
     /**
@@ -58,4 +60,61 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Relationship dengan model Atlit
+     */
+    public function atlit()
+    {
+        return $this->belongsTo(Atlit::class);
+    }
+
+    /**
+     * Check if user has admin role
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user has atlit role
+     */
+    public function isAtlit()
+    {
+        return $this->role === 'user';
+    }
+
+    /**
+     * Check if user has verifikator role
+     */
+    public function isVerifikator()
+    {
+        return $this->role === 'verifikator';
+    }
+
+    /**
+     * Check if user has specific role
+     */
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    /**
+     * Get user's dashboard route based on role
+     */
+    public function getDashboardRoute()
+    {
+        switch ($this->role) {
+            case 'admin':
+                return 'admin.dashboard';
+            case 'user':
+                return 'atlit.dashboard';
+            case 'verifikator':
+                return 'verifikator.dashboard';
+            default:
+                return 'dashboard';
+        }
+    }
 }

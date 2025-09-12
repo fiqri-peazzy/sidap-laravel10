@@ -7,7 +7,7 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Edit Atlit</h1>
-            <a href="{{ route('atlit.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <a href="{{ route('admin.atlit.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
                 <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
             </a>
         </div>
@@ -19,7 +19,8 @@
                         <h6 class="m-0 font-weight-bold text-primary">Form Edit Atlit</h6>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('atlit.update', $atlit->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin.atlit.update', $atlit->id) }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -252,7 +253,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Update
                                 </button>
-                                <a href="{{ route('atlit.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('admin.atlit.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Batal
                                 </a>
                             </div>

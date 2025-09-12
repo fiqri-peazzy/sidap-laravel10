@@ -119,11 +119,11 @@
                         <td>{!! $item->status_badge !!}</td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{{ route('atlit.show', $item->id) }}" class="btn btn-info btn-sm"
+                                <a href="{{ route('admin.atlit.show', $item->id) }}" class="btn btn-info btn-sm"
                                     title="Detail">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('atlit.edit', $item->id) }}" class="btn btn-warning btn-sm"
+                                <a href="{{ route('admin.atlit.edit', $item->id) }}" class="btn btn-warning btn-sm"
                                     title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
