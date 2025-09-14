@@ -106,6 +106,15 @@ Route::middleware([
         Route::get('/profil', [AtlitController::class, 'profil'])->name('profil');
         Route::put('/profil', [AtlitController::class, 'updateProfil'])->name('profil.update');
 
+        // Atlit dapat mengelola dokumen pribadi
+        Route::prefix('dokumen')->name('dokumen.')->group(function () {
+            Route::get('/', [AtlitController::class, 'dokumenIndex'])->name('index');
+            Route::get('/create', [AtlitController::class, 'dokumenCreate'])->name('create');
+            Route::post('/', [AtlitController::class, 'dokumenStore'])->name('store');
+            Route::get('/{dokumen}/download', [AtlitController::class, 'dokumenDownload'])->name('download');
+            Route::delete('/{dokumen}', [AtlitController::class, 'dokumenDestroy'])->name('destroy');
+        });
+
         // Atlit dapat melihat dan menambah prestasi sendiri
         Route::prefix('prestasi')->name('prestasi.')->group(function () {
             Route::get('/', [PrestasiController::class, 'indexAtlit'])->name('index');

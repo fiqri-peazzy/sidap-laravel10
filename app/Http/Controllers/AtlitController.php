@@ -11,6 +11,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\DokumenAtlit;
 
 class AtlitController extends Controller
 {
@@ -133,5 +135,105 @@ class AtlitController extends Controller
     public function kategori()
     {
         return view('admin.atlit.kategori');
+    }
+
+    public function profil()
+    {
+        // Mendapatkan data atlit berdasarkan user yang login
+        $atlit = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit', 'user'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return view('atlit.profil', compact('atlit'));
+    }
+
+    /**
+     * Update profil atlit (akan di-handle oleh Livewire component)
+     * Method ini sebagai fallback jika diperlukan
+     */
+    public function updateProfil(Request $request)
+    {
+        // Redirect ke halaman profil karena update di-handle oleh Livewire
+        return redirect()->route('atlit.profil')->with('info', 'Gunakan form di halaman profil untuk mengupdate data.');
+    }
+
+
+    public function dokumenIndex()
+    {
+        $atlit = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return view('atlit.dokumen.index', compact('atlit'));
+    }
+
+    /**
+     * Menampilkan form upload dokumen
+     */
+    public function dokumenCreate()
+    {
+        $atlit = Atlit::where('user_id', Auth::id())->firstOrFail();
+        return view('atlit.dokumen.create', compact('atlit'));
+    }
+
+    /**
+     * Menyimpan dokumen yang diupload (akan di-handle oleh Livewire)
+     */
+    public function dokumenStore(Request $request)
+    {
+        return redirect()->route('atlit.dokumen.index')
+            ->with('info', 'Silakan gunakan form upload di halaman dokumen.');
+    }
+
+    /**
+     * Download dokumen
+     */
+    public function dokumenDownload(DokumenAtlit $dokumen)
+    {
+        // Pastikan dokumen milik atlit yang login
+        $atlit = Atlit::where('user_id', Auth::id())->firstOrFail();
+
+        if ($dokumen->atlit_id !== $atlit->id) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        $filePath = storage_path('app/private/dokumen_atlit/' . $dokumen->file_path);
+
+        if (!file_exists($filePath)) {
+            return redirect()->route('atlit.dokumen.index')
+                ->with('error', 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $dokumen->nama_file);
+    }
+
+    /**
+     * Hapus dokumen
+     */
+    public function dokumenDestroy(DokumenAtlit $dokumen)
+    {
+        // Pastikan dokumen milik atlit yang login
+        $atlit = Atlit::where('user_id', Auth::id())->firstOrFail();
+
+        if ($dokumen->atlit_id !== $atlit->id) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        try {
+            // Hapus file dari storage
+            $filePath = 'dokumen_atlit/' . $dokumen->file_path;
+            if (Storage::disk('private')->exists($filePath)) {
+                Storage::disk('private')->delete($filePath);
+            }
+
+            // Hapus record dari database
+            $dokumen->delete();
+
+            return redirect()->route('atlit.dokumen.index')
+                ->with('success', 'Dokumen berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('atlit.dokumen.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus dokumen.');
+        }
     }
 }

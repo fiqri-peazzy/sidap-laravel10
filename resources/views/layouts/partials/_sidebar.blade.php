@@ -206,6 +206,13 @@
                 <span>Profil Saya</span>
             </a>
         </li>
+        <!-- Nav Item - Dokumen Saya -->
+        <li class="nav-item {{ request()->routeIs('atlit.dokumen.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('atlit.dokumen.index') }}">
+                <i class="fas fa-fw fa-file-pdf"></i>
+                <span>Dokumen Saya</span>
+            </a>
+        </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider">

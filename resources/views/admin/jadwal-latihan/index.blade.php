@@ -55,14 +55,15 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Jadwal Latihan</h1>
-            <a href="{{ route('jadwal-latihan.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <a href="{{ route('admin.jadwal-latihan.create') }}"
+                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                 <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Jadwal
             </a>
         </div>
 
         <!-- Filter Section -->
         <div class="filter-section">
-            <form method="GET" action="{{ route('jadwal-latihan.index') }}">
+            <form method="GET" action="{{ route('admin.jadwal-latihan.index') }}">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
@@ -112,7 +113,7 @@
                                 <button type="submit" class="btn btn-primary mr-2">
                                     <i class="fas fa-search"></i> Filter
                                 </button>
-                                <a href="{{ route('jadwal-latihan.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('admin.jadwal-latihan.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Reset
                                 </a>
                             </div>
@@ -183,11 +184,11 @@
                                                 <div class="dropdown-menu"
                                                     aria-labelledby="dropdownMenuButton{{ $jadwal->id }}">
                                                     <a class="dropdown-item"
-                                                        href="{{ route('jadwal-latihan.show', $jadwal) }}">
+                                                        href="{{ route('admin.jadwal-latihan.show', $jadwal) }}">
                                                         <i class="fas fa-eye text-info"></i> Detail
                                                     </a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('jadwal-latihan.edit', $jadwal) }}">
+                                                        href="{{ route('admin.jadwal-latihan.edit', $jadwal) }}">
                                                         <i class="fas fa-edit text-warning"></i> Edit
                                                     </a>
                                                     <div class="dropdown-divider"></div>
@@ -223,7 +224,7 @@
                         <i class="fas fa-calendar-times fa-5x text-muted mb-3"></i>
                         <h5 class="text-muted">Tidak ada jadwal latihan</h5>
                         <p class="text-muted">Belum ada jadwal latihan yang dibuat.</p>
-                        <a href="{{ route('jadwal-latihan.create') }}" class="btn btn-primary">
+                        <a href="{{ route('admin.jadwal-latihan.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Tambah Jadwal Pertama
                         </a>
                     </div>
