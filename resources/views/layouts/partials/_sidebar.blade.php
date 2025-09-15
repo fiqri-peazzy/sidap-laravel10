@@ -78,7 +78,7 @@
                     <a class="collapse-item {{ request()->routeIs('atlit.create') ? 'active' : '' }}"
                         href="{{ route('admin.atlit.create') }}">Tambah Atlit</a>
                     <a class="collapse-item {{ request()->routeIs('atlit.kategori') ? 'active' : '' }}"
-                        href="{{ route('admin.atlit.kategori') }}">Kategori Atlit</a>
+                        href="{{ route('admin.atlit.kategori') }}">Kategor i Atlit</a>
                 </div>
             </div>
         </li>
@@ -234,8 +234,7 @@
                     <h6 class="collapse-header">Prestasi Saya:</h6>
                     <a class="collapse-item {{ request()->routeIs('atlit.prestasi.index') ? 'active' : '' }}"
                         href="{{ route('atlit.prestasi.index') }}">Daftar Prestasi</a>
-                    <a class="collapse-item {{ request()->routeIs('atlit.prestasi.create') ? 'active' : '' }}"
-                        href="{{ route('atlit.prestasi.create') }}">Upload Prestasi</a>
+
                 </div>
             </div>
         </li>
@@ -284,7 +283,7 @@
                 alt="...">
             <p class="text-center mb-2"><strong>Portal Atlit</strong> - Kelola profil dan prestasi Anda dengan mudah!
             </p>
-            <a class="btn btn-warning btn-sm" href="{{ route('atlit.prestasi.create') }}">Upload Prestasi</a>
+            {{-- <a class="btn btn-warning btn-sm" href="{{ route('atlit.prestasi.create') }}">Upload Prestasi</a> --}}
         </div>
     </ul>
 @elseif(auth()->user()->isVerifikator())

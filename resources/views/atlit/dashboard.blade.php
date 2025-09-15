@@ -94,9 +94,9 @@
                             <a href="{{ route('atlit.profil') }}" class="list-group-item list-group-item-action">
                                 <i class="fas fa-user text-success"></i> Update Profil
                             </a>
-                            <a href="{{ route('atlit.prestasi.create') }}" class="list-group-item list-group-item-action">
+                            {{-- <a href="{{ route('atlit.prestasi.create') }}" class="list-group-item list-group-item-action">
                                 <i class="fas fa-plus text-warning"></i> Upload Prestasi Baru
-                            </a>
+                            </a> --}}
                             <a href="{{ route('atlit.jadwal-latihan.index') }}"
                                 class="list-group-item list-group-item-action">
                                 <i class="fas fa-clock text-info"></i> Lihat Jadwal Latihan
@@ -130,8 +130,7 @@
                             @endforeach
                             <a href="{{ route('atlit.prestasi.index') }}" class="btn btn-warning btn-sm">Lihat Semua</a>
                         @else
-                            <p class="text-muted">Belum ada prestasi. <a href="{{ route('atlit.prestasi.create') }}">Upload
-                                    prestasi pertama Anda!</a></p>
+                            <p class="text-muted">Belum ada prestasi.</p>
                         @endif
                     </div>
                 </div>

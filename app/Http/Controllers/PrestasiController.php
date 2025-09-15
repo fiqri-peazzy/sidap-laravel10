@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Auth;
 
 class PrestasiController extends Controller
 {
@@ -251,5 +252,64 @@ class PrestasiController extends Controller
             });
 
         return view('admin.prestasi.laporan', compact('prestasi', 'years', 'cabors', 'statistik', 'statistikPerCabor'));
+    }
+
+    public function indexAtlit(Request $request)
+    {
+        // Mendapatkan data atlit berdasarkan user yang login
+        $atlit = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return view('atlit.prestasi.index', compact('atlit'));
+    }
+
+    /**
+     * Menampilkan detail prestasi atlit
+     */
+    public function showAtlit(Prestasi $prestasi)
+    {
+        // Pastikan prestasi milik atlit yang login
+        $atlit = Atlit::where('user_id', Auth::id())->firstOrFail();
+
+        if ($prestasi->atlit_id !== $atlit->id) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        // Load relasi yang diperlukan
+        $prestasi->load(['atlit', 'cabangOlahraga']);
+
+        return view('atlit.prestasi.show', compact('prestasi', 'atlit'));
+    }
+
+    /**
+     * Download sertifikat prestasi
+     */
+    public function downloadSertifikatAtlit(Prestasi $prestasi)
+    {
+        // Pastikan prestasi milik atlit yang login
+        $atlit = Atlit::where('user_id', Auth::id())->firstOrFail();
+
+        if ($prestasi->atlit_id !== $atlit->id) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        // Cek apakah sertifikat ada
+        if (!$prestasi->sertifikat) {
+            return redirect()->route('atlit.prestasi.index')
+                ->with('error', 'Sertifikat tidak tersedia untuk prestasi ini.');
+        }
+
+        $filePath = storage_path('app/public/prestasi/sertifikat/' . $prestasi->sertifikat);
+
+        if (!file_exists($filePath)) {
+            return redirect()->route('atlit.prestasi.index')
+                ->with('error', 'File sertifikat tidak ditemukan.');
+        }
+
+        // Generate nama file untuk download
+        $fileName = 'Sertifikat_' . str_replace(' ', '_', $prestasi->nama_kejuaraan) . '_' . $prestasi->tahun . '.' . pathinfo($prestasi->sertifikat, PATHINFO_EXTENSION);
+
+        return response()->download($filePath, $fileName);
     }
 }

@@ -115,15 +115,11 @@ Route::middleware([
             Route::delete('/{dokumen}', [AtlitController::class, 'dokumenDestroy'])->name('destroy');
         });
 
-        // Atlit dapat melihat dan menambah prestasi sendiri
+        // Atlit dapat melihat prestasi sendiri (read-only)
         Route::prefix('prestasi')->name('prestasi.')->group(function () {
             Route::get('/', [PrestasiController::class, 'indexAtlit'])->name('index');
-            Route::get('/create', [PrestasiController::class, 'createAtlit'])->name('create');
-            Route::post('/', [PrestasiController::class, 'storeAtlit'])->name('store');
             Route::get('/{prestasi}', [PrestasiController::class, 'showAtlit'])->name('show');
-            Route::get('/{prestasi}/edit', [PrestasiController::class, 'editAtlit'])->name('edit');
-            Route::put('/{prestasi}', [PrestasiController::class, 'updateAtlit'])->name('update');
-            Route::get('/{prestasi}/download-sertifikat', [PrestasiController::class, 'downloadSertifikat'])->name('download-sertifikat');
+            Route::get('/{prestasi}/download-sertifikat-atlit', [PrestasiController::class, 'downloadSertifikatAtlit'])->name('download-sertifikat-atlit');
         });
 
         // Atlit dapat melihat jadwal latihan dan event
