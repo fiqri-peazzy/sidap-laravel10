@@ -6,13 +6,14 @@ use Livewire\Component;
 use App\Models\Atlit;
 use App\Models\Prestasi;
 use App\Models\Cabor;
-use Illuminate\Support\Facades\Auth;
+use Livewire\WithPagination;
 
 class PrestasiAtlit extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
     public $atlit;
-    public $prestasiList = [];
-    public $prestasiGrouped = [];
 
     // Filter properties
     public $filterTahun = '';
@@ -40,7 +41,19 @@ class PrestasiAtlit extends Component
     {
         $this->atlit = $atlit;
         $this->loadFilterOptions();
-        $this->loadPrestasi();
+    }
+
+    public function updating($property)
+    {
+        if (in_array($property, [
+            'filterTahun',
+            'filterCabor',
+            'filterStatus',
+            'filterTingkat',
+            'searchTerm',
+        ])) {
+            $this->resetPage();
+        }
     }
 
     public function loadFilterOptions()
@@ -61,65 +74,37 @@ class PrestasiAtlit extends Component
             ->get();
     }
 
-    public function loadPrestasi()
+    private function queryPrestasi()
     {
-        $query = Prestasi::with(['cabangOlahraga'])
-            ->where('atlit_id', $this->atlit->id);
-
-        // Apply filters
-        if ($this->filterTahun) {
-            $query->where('tahun', $this->filterTahun);
-        }
-
-        if ($this->filterCabor) {
-            $query->where('cabang_olahraga_id', $this->filterCabor);
-        }
-
-        if ($this->filterStatus) {
-            $query->where('status', $this->filterStatus);
-        }
-
-        if ($this->filterTingkat) {
-            $query->where('tingkat_kejuaraan', 'like', '%' . $this->filterTingkat . '%');
-        }
-
-        if ($this->searchTerm) {
-            $query->where(function ($q) {
+        return Prestasi::with(['cabangOlahraga'])
+            ->where('atlit_id', $this->atlit->id)
+            ->when($this->filterTahun, fn($q) => $q->where('tahun', $this->filterTahun))
+            ->when($this->filterCabor, fn($q) => $q->where('cabang_olahraga_id', $this->filterCabor))
+            ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
+            ->when($this->filterTingkat, fn($q) => $q->where('tingkat_kejuaraan', 'like', '%' . $this->filterTingkat . '%'))
+            ->when($this->searchTerm, function ($q) {
                 $q->where('nama_kejuaraan', 'like', '%' . $this->searchTerm . '%')
                     ->orWhere('tempat_kejuaraan', 'like', '%' . $this->searchTerm . '%')
                     ->orWhere('nomor_pertandingan', 'like', '%' . $this->searchTerm . '%');
-            });
-        }
-
-        $this->prestasiList = $query->orderBy('tanggal_mulai', 'desc')->paginate(3);
-
-        // Group by year for timeline view
-        $this->prestasiGrouped = $this->prestasiList->getCollection()->groupBy('tahun');
+            })
+            ->orderBy('tanggal_mulai', 'desc');
     }
 
-    public function updatedFilterTahun()
+    public function getStatistikPrestasi($prestasiList)
     {
-        $this->loadPrestasi();
-    }
+        $filtered = $prestasiList->getCollection(); // ambil collection dari paginator
 
-    public function updatedFilterCabor()
-    {
-        $this->loadPrestasi();
-    }
-
-    public function updatedFilterStatus()
-    {
-        $this->loadPrestasi();
-    }
-
-    public function updatedFilterTingkat()
-    {
-        $this->loadPrestasi();
-    }
-
-    public function updatedSearchTerm()
-    {
-        $this->loadPrestasi();
+        return [
+            'total'     => $prestasiList->total(),
+            'verified'  => $filtered->where('status', 'verified')->count(),
+            'pending'   => $filtered->where('status', 'pending')->count(),
+            'juara_1'   => $filtered->where('peringkat', '1')->count(),
+            'juara_2'   => $filtered->where('peringkat', '2')->count(),
+            'juara_3'   => $filtered->where('peringkat', '3')->count(),
+            'emas'      => $filtered->where('medali', 'Emas')->count(),
+            'perak'     => $filtered->where('medali', 'Perak')->count(),
+            'perunggu'  => $filtered->where('medali', 'Perunggu')->count(),
+        ];
     }
 
     public function resetFilters()
@@ -129,7 +114,7 @@ class PrestasiAtlit extends Component
         $this->filterStatus = '';
         $this->filterTingkat = '';
         $this->searchTerm = '';
-        $this->loadPrestasi();
+        $this->resetPage();
     }
 
     public function switchViewMode($mode)
@@ -137,27 +122,14 @@ class PrestasiAtlit extends Component
         $this->viewMode = $mode;
     }
 
-    public function getStatistikPrestasi()
-    {
-        $filtered = $this->prestasiList;
-
-        return [
-            'total' => $filtered->count(),
-            'verified' => $filtered->where('status', 'verified')->count(),
-            'pending' => $filtered->where('status', 'pending')->count(),
-            'juara_1' => $filtered->where('peringkat', '1')->count(),
-            'juara_2' => $filtered->where('peringkat', '2')->count(),
-            'juara_3' => $filtered->where('peringkat', '3')->count(),
-            'emas' => $filtered->where('medali', 'Emas')->count(),
-            'perak' => $filtered->where('medali', 'Perak')->count(),
-            'perunggu' => $filtered->where('medali', 'Perunggu')->count(),
-        ];
-    }
-
     public function render()
     {
+        $prestasiList = $this->queryPrestasi()->paginate(9);
+
         return view('livewire.prestasi-atlit', [
-            'statistik' => $this->getStatistikPrestasi(),
+            'prestasiList'    => $prestasiList,
+            'prestasiGrouped' => $prestasiList->getCollection()->groupBy('tahun'),
+            'statistik'       => $this->getStatistikPrestasi($prestasiList),
         ]);
     }
 }
