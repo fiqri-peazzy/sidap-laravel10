@@ -245,21 +245,6 @@
         <!-- Heading -->
         <div class="sidebar-heading">Jadwal & Kegiatan</div>
 
-        <!-- Nav Item - Jadwal Latihan -->
-        <li class="nav-item {{ request()->routeIs('atlit.jadwal-latihan.*') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('atlit.jadwal-latihan.index') }}">
-                <i class="fas fa-fw fa-clock"></i>
-                <span>Jadwal Latihan</span>
-            </a>
-        </li>
-
-        <!-- Nav Item - Jadwal Event -->
-        <li class="nav-item {{ request()->routeIs('atlit.jadwal-event.*') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('atlit.jadwal-event.index') }}">
-                <i class="fas fa-fw fa-calendar-alt"></i>
-                <span>Jadwal Event</span>
-            </a>
-        </li>
 
         <!-- Nav Item - Kalender -->
         <li class="nav-item {{ request()->routeIs('atlit.kalender') ? 'active' : '' }}">

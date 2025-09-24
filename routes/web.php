@@ -128,6 +128,9 @@ Route::middleware([
 
         // Kalender kegiatan untuk atlit
         Route::get('/kalender', [KalenderKegiatanController::class, 'indexAtlit'])->name('kalender');
+        Route::get('/kalender/events', [KalenderKegiatanController::class, 'getAllEventsAtlit'])->name('kalender.events');
+        Route::get('/kalender/event-detail', [KalenderKegiatanController::class, 'getEventDetailAtlit'])->name('kalender.event-detail');
+        Route::get('/kalender/events-by-month', [KalenderKegiatanController::class, 'getEventsByMonth'])->name('kalender.events-by-month');
     });
 
     // VERIFIKATOR ROUTES
