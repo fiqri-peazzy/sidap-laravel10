@@ -160,7 +160,7 @@
                     </div>
                     <div class="card-body">
                         @if ($prestasi->sertifikat)
-                            <a href="{{ route('atlit.prestasi.download-sertifikat', $prestasi->id) }}"
+                            <a href="{{ route('atlit.prestasi.download-sertifikat-atlit', $prestasi->id) }}"
                                 class="btn btn-success btn-block mb-2">
                                 <i class="fas fa-download mr-2"></i>Download Sertifikat
                             </a>
