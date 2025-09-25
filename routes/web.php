@@ -31,7 +31,6 @@ Route::middleware([
 
     // Dashboard redirect route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
     // ADMIN ROUTES
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         // Admin Dashboard
@@ -105,6 +104,9 @@ Route::middleware([
         // Atlit dapat melihat profil sendiri dan mengupdate
         Route::get('/profil', [AtlitController::class, 'profil'])->name('profil');
         Route::put('/profil', [AtlitController::class, 'updateProfil'])->name('profil.update');
+        Route::get('/profil/id-card/preview', [AtlitController::class, 'previewIdCard'])->name('profil.id-card.preview');
+        Route::get('/profil/id-card/cetak', [AtlitController::class, 'cetakIdCard'])->name('profil.id-card.cetak');
+        Route::get('/verify/{id}', [AtlitController::class, 'verifyIdCard'])->name('verify');
 
         // Atlit dapat mengelola dokumen pribadi
         Route::prefix('dokumen')->name('dokumen.')->group(function () {

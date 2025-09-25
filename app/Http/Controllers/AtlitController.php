@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DokumenAtlit;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AtlitController extends Controller
 {
@@ -145,6 +146,96 @@ class AtlitController extends Controller
             ->firstOrFail();
 
         return view('atlit.profil', compact('atlit'));
+    }
+    public function cetakIdCard()
+    {
+        // Mendapatkan data atlit berdasarkan user yang login
+        $atlit = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit', 'user'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Data untuk ID Card
+        $data = [
+            'atlit' => $atlit,
+            'qr_code' => $this->generateQRCode($atlit),
+            'generated_date' => now()->format('d F Y')
+        ];
+
+        // Generate PDF
+        $pdf = PDF::loadView('atlit.id-card', $data);
+        $pdf->setPaper([0, 0, 283.46, 425.20], 'portrait'); // Ukuran ID Card (10cm x 15cm)
+
+        // Return PDF langsung di browser (no attachment)
+        return $pdf->stream('ID-Card-' . str_replace(' ', '-', $atlit->nama_lengkap) . '.pdf');
+    }
+
+    /**
+     * Preview ID Card sebelum cetak
+     */
+    public function previewIdCard()
+    {
+        // Mendapatkan data atlit berdasarkan user yang login
+        $atlit = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit', 'user'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Data untuk preview
+        $data = [
+            'atlit' => $atlit,
+            'qr_code' => $this->generateQRCode($atlit),
+            'generated_date' => now()->format('d F Y')
+        ];
+
+        return view('atlit.id-card-preview', $data);
+    }
+
+    /**
+     * Generate QR Code untuk ID Card
+     */
+    private function generateQRCode($atlit)
+    {
+        // Data yang akan di-encode dalam QR Code
+        $qrData = [
+            'nama' => $atlit->nama_lengkap,
+            'nik' => $atlit->nik,
+            'cabor' => $atlit->cabangOlahraga->nama_cabang ?? '',
+            'klub' => $atlit->klub->nama_klub ?? '',
+            'generated' => now()->format('Y-m-d'),
+            'verify_url' => route('atlit.verify', $atlit->id)
+        ];
+
+        // Convert ke JSON string untuk QR Code
+        return base64_encode(json_encode($qrData));
+    }
+
+    /**
+     * Verify ID Card (untuk validasi QR Code)
+     */
+    public function verifyIdCard($id)
+    {
+        $atlit = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit'])
+            ->where('id', $id)
+            ->where('status', 'aktif')
+            ->first();
+
+        if (!$atlit) {
+            return response()->json([
+                'status' => 'invalid',
+                'message' => 'ID Card tidak valid atau atlit tidak aktif'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'valid',
+            'data' => [
+                'nama' => $atlit->nama_lengkap,
+                'nik' => $atlit->nik,
+                'cabor' => $atlit->cabangOlahraga->nama_cabang ?? '',
+                'klub' => $atlit->klub->nama_klub ?? '',
+                'status' => $atlit->status,
+                'verified_at' => now()->format('d F Y H:i:s')
+            ]
+        ]);
     }
 
     /**
