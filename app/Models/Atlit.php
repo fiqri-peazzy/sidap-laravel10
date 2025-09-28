@@ -69,6 +69,128 @@ class Atlit extends Model
     }
 
 
+    public function verifikator()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    // Relasi dengan DokumenAtlit
+    public function dokumen()
+    {
+        return $this->hasMany(DokumenAtlit::class, 'atlit_id');
+    }
+
+
+    // Konstanta status
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_VERIFIED = 'diverifikasi';
+    public const STATUS_REJECTED = 'ditolak';
+
+    public const STATUS_OPTIONS = [
+        self::STATUS_PENDING => 'Menunggu Verifikasi',
+        self::STATUS_VERIFIED => 'Terverifikasi',
+        self::STATUS_REJECTED => 'Ditolak',
+    ];
+
+    // Accessor untuk status dalam bahasa Indonesia
+    public function getStatusIndonesiaAttribute()
+    {
+        return self::STATUS_OPTIONS[$this->status] ?? $this->status;
+    }
+
+    // Accessor untuk badge class berdasarkan status
+    public function getStatusBadgeClassAttribute()
+    {
+        return match ($this->status) {
+            self::STATUS_PENDING => 'badge-warning',
+            self::STATUS_VERIFIED => 'badge-success',
+            self::STATUS_REJECTED => 'badge-danger',
+            default => 'badge-secondary'
+        };
+    }
+
+    // Scope untuk filter berdasarkan status
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status_verifikasi', $status);
+    }
+
+    // Scope untuk atlet yang menunggu verifikasi
+    public function scopePending($query)
+    {
+        return $query->where('status_verifikasi', self::STATUS_PENDING);
+    }
+
+    // Scope untuk atlet yang sudah terverifikasi
+    public function scopeVerified($query)
+    {
+        return $query->where('status_verifikasi', self::STATUS_VERIFIED);
+    }
+
+    // Scope untuk atlet yang ditolak
+    public function scopeRejected($query)
+    {
+        return $query->where('status_verifikasi', self::STATUS_REJECTED);
+    }
+
+    // Method untuk cek apakah atlet sudah terverifikasi
+    public function isVerified()
+    {
+        return $this->status_verifikasi === self::STATUS_VERIFIED;
+    }
+
+    // Method untuk cek apakah atlet ditolak
+    public function isRejected()
+    {
+        return $this->status_verifikasi === self::STATUS_REJECTED;
+    }
+
+    // Method untuk cek apakah atlet masih pending
+    public function isPending()
+    {
+        return $this->status_verifikasi === self::STATUS_PENDING;
+    }
+
+    // Method untuk menghitung persentase dokumen terverifikasi
+    public function getDocumentVerificationPercentage()
+    {
+        $totalDocuments = $this->dokumen->count();
+
+        if ($totalDocuments === 0) {
+            return 0;
+        }
+
+        $verifiedDocuments = $this->dokumen->where('status_verifikasi', 'verified')->count();
+
+        return round(($verifiedDocuments / $totalDocuments) * 100, 2);
+    }
+
+    // Method untuk cek apakah semua dokumen sudah terverifikasi
+    public function hasAllDocumentsVerified()
+    {
+        return $this->dokumen->count() > 0 &&
+            $this->dokumen->where('status_verifikasi', 'verified')->count() === $this->dokumen->count();
+    }
+
+    // Method untuk cek apakah ada dokumen yang ditolak
+    public function hasRejectedDocuments()
+    {
+        return $this->dokumen->where('status_verifikasi', 'rejected')->count() > 0;
+    }
+
+    // Method untuk mendapatkan statistik dokumen
+    public function getDocumentStats()
+    {
+        $dokumens = $this->dokumen;
+
+        return [
+            'total' => $dokumens->count(),
+            'verified' => $dokumens->where('status_verifikasi', 'verified')->count(),
+            'pending' => $dokumens->where('status_verifikasi', 'pending')->count(),
+            'rejected' => $dokumens->where('status_verifikasi', 'rejected')->count(),
+        ];
+    }
+
 
     // Scope untuk status aktif
     public function scopeAktif($query)

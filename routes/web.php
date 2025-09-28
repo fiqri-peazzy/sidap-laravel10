@@ -152,8 +152,14 @@ Route::middleware([
         });
 
         // Verifikator dapat melihat data atlit untuk verifikasi
-        Route::get('/atlit', [AtlitController::class, 'indexVerifikator'])->name('atlit.index');
-        Route::get('/atlit/{atlit}', [AtlitController::class, 'showVerifikator'])->name('atlit.show');
+        Route::prefix('atlit')->name('atlit.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'index'])->name('index');
+            Route::get('/{atlit}', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'show'])->name('show');
+            Route::put('/{atlit}/verify', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'verifyAtlit'])->name('verify');
+            Route::put('/{atlit}/reject', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'rejectAtlit'])->name('reject');
+            Route::put('/{atlit}/dokumen/{dokumen}/verify', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'verifyDokumen'])->name('dokumen.verify');
+            Route::put('/{atlit}/dokumen/{dokumen}/reject', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'rejectDokumen'])->name('dokumen.reject');
+        });
     });
 
     // SHARED ROUTES (dapat diakses berdasarkan role dengan middleware)
