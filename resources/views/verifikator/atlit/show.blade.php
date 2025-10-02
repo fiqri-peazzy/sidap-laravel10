@@ -110,8 +110,9 @@
                     <div class="col-sm-8">
                         <div class="d-flex align-items-center">
                             @if ($atlit->foto)
-                                <img src="{{ asset('storage/' . $atlit->foto) }}" alt="{{ $atlit->nama_lengkap }}"
-                                    class="rounded-circle mr-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                <img src="{{ asset('storage/atlit/foto/' . $atlit->foto) }}"
+                                    alt="{{ $atlit->nama_lengkap }}" class="rounded-circle mr-3"
+                                    style="width: 50px; height: 50px; object-fit: cover;">
                             @else
                                 <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mr-3"
                                     style="width: 50px; height: 50px;">
@@ -124,7 +125,7 @@
                                     <small>
                                         <i class="fas fa-id-card mr-1"></i>{{ $atlit->nik }} |
                                         <i
-                                            class="fas fa-running mr-1"></i>{{ $atlit->cabangOlahraga->nama_cabor ?? 'Belum ada cabor' }}
+                                            class="fas fa-running mr-1"></i>{{ $atlit->cabangOlahraga->nama_cabang ?? 'Belum ada cabor' }}
                                         |
                                         <i class="fas fa-calendar mr-1"></i>{{ $atlit->created_at->format('d M Y') }}
                                     </small>
@@ -134,20 +135,12 @@
                     </div>
                     <div class="col-sm-4 text-right">
                         <!-- Status Badge -->
-                        @if ($atlit->status == 'pending')
-                            <span class="badge badge-warning badge-lg px-3 py-2">
-                                <i class="fas fa-clock mr-2"></i>Menunggu Verifikasi
-                            </span>
-                        @elseif($atlit->status == 'diverifikasi')
+                        @if ($atlit->status == 'aktif')
                             <span class="badge badge-success badge-lg px-3 py-2">
-                                <i class="fas fa-check-circle mr-2"></i>Terverifikasi
-                            </span>
-                        @elseif($atlit->status == 'ditolak')
-                            <span class="badge badge-danger badge-lg px-3 py-2">
-                                <i class="fas fa-times-circle mr-2"></i>Ditolak
+                                <i class="fas fa-clock mr-2"></i>{{ ucfirst($atlit->status) }}
                             </span>
                         @else
-                            <span class="badge badge-secondary badge-lg px-3 py-2">
+                            <span class="badge badge-danger badge-lg px-3 py-2">
                                 <i class="fas fa-question-circle mr-2"></i>{{ ucfirst($atlit->status) }}
                             </span>
                         @endif

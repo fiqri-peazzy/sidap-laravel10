@@ -315,20 +315,20 @@
                     <h6 class="collapse-header">Prestasi:</h6>
                     <a class="collapse-item {{ request()->routeIs('verifikator.prestasi.index') && !request()->has('status') ? 'active' : '' }}"
                         href="{{ route('verifikator.prestasi.index') }}">Semua Prestasi</a>
-                    <a class="collapse-item {{ request()->get('status') == 'menunggu' ? 'active' : '' }}"
-                        href="{{ route('verifikator.prestasi.index', ['status' => 'menunggu']) }}">
+                    <a class="collapse-item {{ request()->get('status') == 'pending' ? 'active' : '' }}"
+                        href="{{ route('verifikator.prestasi.index', ['status' => 'pending']) }}">
                         Menunggu Verifikasi
                         @php
-                            $pendingCount = \App\Models\Prestasi::where('status', 'menunggu')->count();
+                            $pendingCount = \App\Models\Prestasi::where('status', 'pending')->count();
                         @endphp
                         @if ($pendingCount > 0)
                             <span class="badge badge-danger badge-counter ml-1">{{ $pendingCount }}</span>
                         @endif
                     </a>
-                    <a class="collapse-item {{ request()->get('status') == 'diverifikasi' ? 'active' : '' }}"
-                        href="{{ route('verifikator.prestasi.index', ['status' => 'diverifikasi']) }}">Terverifikasi</a>
-                    <a class="collapse-item {{ request()->get('status') == 'ditolak' ? 'active' : '' }}"
-                        href="{{ route('verifikator.prestasi.index', ['status' => 'ditolak']) }}">Ditolak</a>
+                    <a class="collapse-item {{ request()->get('status') == 'verified' ? 'active' : '' }}"
+                        href="{{ route('verifikator.prestasi.index', ['status' => 'verified']) }}">Terverifikasi</a>
+                    <a class="collapse-item {{ request()->get('status') == 'rejected' ? 'active' : '' }}"
+                        href="{{ route('verifikator.prestasi.index', ['status' => 'rejected']) }}">Ditolak</a>
                 </div>
             </div>
         </li>

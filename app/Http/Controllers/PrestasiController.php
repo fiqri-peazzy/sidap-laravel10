@@ -164,20 +164,69 @@ class PrestasiController extends Controller
             ->with('success', 'Data prestasi berhasil dihapus.');
     }
 
-    public function verify(Prestasi $prestasi)
+    public function showVerifikator(Prestasi $prestasi)
     {
-        $prestasi->update(['status' => 'verified']);
+        // Load relasi yang diperlukan
+        $prestasi->load(['atlit.klub', 'atlit.cabangOlahraga', 'cabangOlahraga']);
 
-        return redirect()->back()
+        return view('verifikator.prestasi.show', compact('prestasi'));
+    }
+
+    /**
+     * Verifikasi prestasi (approve)
+     */
+    public function verify(Request $request, Prestasi $prestasi)
+    {
+        $validated = $request->validate([
+            'catatan_verifikator' => 'nullable|string|max:1000',
+        ]);
+
+        $prestasi->update([
+            'status' => 'verified',
+            'catatan_verifikator' => $validated['catatan_verifikator'] ?? null,
+        ]);
+
+        return redirect()->route('verifikator.prestasi.show', $prestasi->id)
             ->with('success', 'Prestasi berhasil diverifikasi.');
     }
 
-    public function reject(Prestasi $prestasi)
+    /**
+     * Tolak prestasi (reject)
+     */
+    public function reject(Request $request, Prestasi $prestasi)
     {
-        $prestasi->update(['status' => 'rejected']);
+        $validated = $request->validate([
+            'catatan_verifikator' => 'required|string|max:1000',
+        ], [
+            'catatan_verifikator.required' => 'Catatan wajib diisi saat menolak prestasi.',
+        ]);
 
-        return redirect()->back()
+        $prestasi->update([
+            'status' => 'rejected',
+            'catatan_verifikator' => $validated['catatan_verifikator'],
+        ]);
+
+        return redirect()->route('verifikator.prestasi.show', $prestasi->id)
             ->with('success', 'Prestasi berhasil ditolak.');
+    }
+
+    /**
+     * Tambah atau update catatan verifikator
+     */
+    public function addCatatan(Request $request, Prestasi $prestasi)
+    {
+        $validated = $request->validate([
+            'catatan_verifikator' => 'required|string|max:1000',
+        ], [
+            'catatan_verifikator.required' => 'Catatan tidak boleh kosong.',
+        ]);
+
+        $prestasi->update([
+            'catatan_verifikator' => $validated['catatan_verifikator'],
+        ]);
+
+        return redirect()->route('verifikator.prestasi.show', $prestasi->id)
+            ->with('success', 'Catatan verifikator berhasil disimpan.');
     }
 
     public function downloadSertifikat(Prestasi $prestasi)
@@ -311,5 +360,16 @@ class PrestasiController extends Controller
         $fileName = 'Sertifikat_' . str_replace(' ', '_', $prestasi->nama_kejuaraan) . '_' . $prestasi->tahun . '.' . pathinfo($prestasi->sertifikat, PATHINFO_EXTENSION);
 
         return response()->download($filePath, $fileName);
+    }
+
+    /**
+     * Menampilkan daftar prestasi untuk verifikator
+     */
+    /**
+     * Menampilkan halaman verifikasi prestasi (menggunakan Livewire)
+     */
+    public function indexVerifikator()
+    {
+        return view('verifikator.prestasi.index');
     }
 }

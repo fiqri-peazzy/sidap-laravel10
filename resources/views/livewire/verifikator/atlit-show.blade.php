@@ -26,8 +26,8 @@
                     <!-- Photo -->
                     <div class="text-center mb-4 card-profile-image">
                         @if ($atlit->foto)
-                            <img src="{{ asset('storage/' . $atlit->foto) }}" alt="{{ $atlit->nama_lengkap }}"
-                                class="rounded-circle shadow-lg"
+                            <img src="{{ asset('storage/atlit/foto/' . $atlit->foto) }}"
+                                alt="{{ $atlit->nama_lengkap }}" class="rounded-circle shadow-lg"
                                 style="width: 120px; height: 120px; object-fit: cover; border: 5px solid #fff;">
                         @else
                             <div class="rounded-circle bg-gradient-secondary d-flex align-items-center justify-content-center mx-auto shadow-lg"
@@ -97,7 +97,7 @@
                                 </td>
                                 <td>
                                     <span
-                                        class="badge badge-success">{{ $atlit->cabangOlahraga->nama_cabor ?? 'Belum ada cabor' }}</span>
+                                        class="badge badge-success">{{ $atlit->cabangOlahraga->nama_cabang ?? 'Belum ada cabor' }}</span>
                                 </td>
                             </tr>
                             <tr>
@@ -167,7 +167,7 @@
 
         <!-- Right Column - Documents -->
         <div class="col-lg-8">
-            <!-- Document Statistics -->
+            {{-- <!-- Document Statistics -->
             @if (!empty($documentStats))
                 <div class="card shadow mb-4">
                     <div class="card-body document-stats">
@@ -199,7 +199,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
             <!-- Documents Card -->
             <div class="card shadow mb-4">
@@ -229,7 +229,8 @@
                                                         <i class="fas fa-file-pdf mr-1 text-danger"></i>
                                                         {{ $dokumen->kategori_berkas }}
                                                     </h6>
-                                                    <p class="mb-1 text-sm text-muted">{{ $dokumen->nama_file }}</p>
+                                                    <p class="mb-1 text-sm text-muted">
+                                                        {{ Str::limit($dokumen->nama_file, 15, '...') }}</p>
                                                     <small class="text-muted">
                                                         <i class="fas fa-calendar mr-1"></i>
                                                         {{ $dokumen->created_at->format('d/m/Y H:i') }}
@@ -304,7 +305,7 @@
                                                         class="text-muted">{{ $selectedDokumen->nama_file }}</small>
                                                 </div>
                                                 <div>
-                                                    <a href="{{ asset('storage/' . $selectedDokumen->file_path) }}"
+                                                    <a href="{{ route('verifikator.dokumen-atlit.preview', $selectedDokumen->file_path) }}"
                                                         target="_blank" class="btn btn-outline-primary btn-sm">
                                                         <i class="fas fa-external-link-alt mr-1"></i>Buka di Tab Baru
                                                     </a>
@@ -312,11 +313,11 @@
                                             </div>
                                         </div>
                                         <iframe id="pdf-preview"
-                                            src="{{ asset('storage/' . $selectedDokumen->file_path) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                            src="{{ route('verifikator.dokumen-atlit.preview', $selectedDokumen->file_path) }}#toolbar=0&navpanes=0&scrollbar=0"
                                             width="100%" height="500" style="border: none; background: white;">
                                             <div class="p-4 text-center">
                                                 <p class="text-muted">Browser Anda tidak mendukung preview PDF.</p>
-                                                <a href="{{ asset('storage/' . $selectedDokumen->file_path) }}"
+                                                <a href="{{ route('verifikator.dokumen-atlit.preview', $selectedDokumen->file_path) }}"
                                                     target="_blank" class="btn btn-primary">
                                                     <i class="fas fa-download mr-2"></i>Download Dokumen
                                                 </a>
@@ -367,7 +368,8 @@
                             <h6>Verifikasi Data Atlet</h6>
                         </div>
                         <p class="text-center">Apakah Anda yakin akan memverifikasi data atlet
-                            <strong>{{ $atlit->nama_lengkap }}</strong>?</p>
+                            <strong>{{ $atlit->nama_lengkap }}</strong>?
+                        </p>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle mr-2"></i>
                             <strong>Perhatian:</strong> Data atlet yang sudah diverifikasi akan mengubah statusnya
@@ -391,7 +393,7 @@
     <!-- Modal Tolak Atlet -->
     @if ($showRejectModal)
         <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
                 <div class="modal-content animate-fade-in">
                     <div class="modal-header bg-danger text-white">
                         <h5 class="modal-title">
@@ -408,7 +410,8 @@
                             <h6>Tolak Data Atlet</h6>
                         </div>
                         <p class="text-center">Anda akan menolak data atlet
-                            <strong>{{ $atlit->nama_lengkap }}</strong>.</p>
+                            <strong>{{ $atlit->nama_lengkap }}</strong>.
+                        </p>
 
                         <div class="form-group">
                             <label for="alasanPenolakan" class="font-weight-bold">
