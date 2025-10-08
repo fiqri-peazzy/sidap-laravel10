@@ -28,6 +28,7 @@ class Prestasi extends Model
         'keterangan',
         'sertifikat',
         'status',
+
     ];
 
     protected $casts = [

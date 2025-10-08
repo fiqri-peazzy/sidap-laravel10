@@ -7,12 +7,15 @@ use App\Models\DokumenAtlit;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AtlitShow extends Component
 {
     public $atlit;
     public $documentStats = [];
     public $selectedDokumen = null;
+
+    // Modal states
     public $showVerifyModal = false;
     public $showRejectModal = false;
     public $showDokumenVerifyModal = false;
@@ -38,6 +41,10 @@ class AtlitShow extends Component
         'refreshAtletData' => 'refreshAtletData',
         'documentUpdated' => 'refreshAtletData'
     ];
+
+    // ==========================================================
+    // LIFECYCLE
+    // ==========================================================
 
     public function mount(Atlit $atlit, $documentStats = [])
     {
@@ -73,20 +80,21 @@ class AtlitShow extends Component
             }
         ]);
 
-        // Refresh document stats
         $this->documentStats = $this->atlit->getDocumentStats();
 
-        // Refresh selected document if it exists
         if ($this->selectedDokumen) {
             $this->selectedDokumen = $this->atlit->dokumen->find($this->selectedDokumen->id);
         }
     }
 
-    // Modal methods untuk verifikasi atlet
+    // ==========================================================
+    // MODALS - OPEN
+    // ==========================================================
+
     public function openVerifyAtlitModal()
     {
-        if ($this->atlit->status !== 'pending') {
-            session()->flash('warning', 'Atlet sudah pernah diverifikasi sebelumnya!');
+        if ($this->atlit->status_verifikasi !== Atlit::STATUS_VERIFIKASI_PENDING) {
+            session()->flash('warning', 'Data atlet sudah diverifikasi sebelumnya.');
             return;
         }
 
@@ -97,8 +105,8 @@ class AtlitShow extends Component
 
     public function openRejectAtlitModal()
     {
-        if ($this->atlit->status !== 'pending') {
-            session()->flash('warning', 'Atlet sudah pernah diverifikasi sebelumnya!');
+        if ($this->atlit->status_verifikasi !== Atlit::STATUS_VERIFIKASI_PENDING) {
+            session()->flash('warning', 'Data atlet sudah diverifikasi sebelumnya.');
             return;
         }
 
@@ -108,7 +116,6 @@ class AtlitShow extends Component
         $this->showRejectModal = true;
     }
 
-    // Modal methods untuk verifikasi dokumen
     public function openVerifyDokumenModal($dokumenId)
     {
         $dokumen = DokumenAtlit::find($dokumenId);
@@ -119,7 +126,7 @@ class AtlitShow extends Component
         }
 
         if ($dokumen->status_verifikasi !== 'pending') {
-            session()->flash('warning', 'Dokumen sudah pernah diverifikasi sebelumnya!');
+            session()->flash('warning', 'Dokumen sudah diverifikasi sebelumnya.');
             return;
         }
 
@@ -139,7 +146,7 @@ class AtlitShow extends Component
         }
 
         if ($dokumen->status_verifikasi !== 'pending') {
-            session()->flash('warning', 'Dokumen sudah pernah diverifikasi sebelumnya!');
+            session()->flash('warning', 'Dokumen sudah diverifikasi sebelumnya.');
             return;
         }
 
@@ -150,7 +157,10 @@ class AtlitShow extends Component
         $this->showDokumenRejectModal = true;
     }
 
-    // Close all modals
+    // ==========================================================
+    // CLOSE MODALS - PERBAIKAN: Method ini HARUS ada dan tidak di-comment
+    // ==========================================================
+
     public function closeModals()
     {
         $this->showVerifyModal = false;
@@ -162,86 +172,130 @@ class AtlitShow extends Component
         $this->resetValidation();
     }
 
-    // Verify atlet
+    // ==========================================================
+    // VERIFY / REJECT ATLIT
+    // ==========================================================
+
     public function verifyAtlit()
     {
-        if ($this->atlit->status !== 'pending') {
-            session()->flash('warning', 'Atlet sudah pernah diverifikasi sebelumnya!');
+        if (!$this->atlit || $this->atlit->status_verifikasi !== Atlit::STATUS_VERIFIKASI_PENDING) {
+            session()->flash('warning', 'Data atlet sudah diverifikasi sebelumnya.');
             $this->closeModals();
             return;
         }
 
+        DB::beginTransaction();
         try {
             $this->atlit->update([
-                'status' => 'diverifikasi',
+                'status_verifikasi' => Atlit::STATUS_VERIFIKASI_VERIFIED,
                 'verified_by' => Auth::id(),
                 'verified_at' => now(),
-                'alasan_ditolak' => null,
+                'catatan_verifikasi' => null,
             ]);
 
-            Log::info('Atlet verified', [
+            Log::info('Atlit verified successfully', [
                 'atlit_id' => $this->atlit->id,
-                'atlit_name' => $this->atlit->nama_lengkap,
                 'verified_by' => Auth::id(),
                 'verifier_name' => Auth::user()->name,
             ]);
 
-            $this->refreshAtletData();
+            DB::commit();
+
+            // PERBAIKAN: Refresh dulu SEBELUM close modal
+            $this->atlit = $this->atlit->fresh([
+                'cabangOlahraga',
+                'kategoriAtlit',
+                'klub',
+                'user',
+                'verifikator',
+                'dokumen' => function ($query) {
+                    $query->orderBy('kategori_berkas')->orderBy('created_at', 'desc');
+                }
+            ]);
+            $this->documentStats = $this->atlit->getDocumentStats();
+
+            // Close modal setelah refresh
             $this->closeModals();
 
+            // Flash message & dispatch browser event untuk animasi
             session()->flash('success', 'Data atlet berhasil diverifikasi!');
+            $this->dispatch('atlit-verified');
         } catch (\Exception $e) {
-            Log::error('Error verifying atlet', [
+            DB::rollBack();
+            Log::error('Failed to verify atlit', [
                 'atlit_id' => $this->atlit->id,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            session()->flash('error', 'Terjadi kesalahan saat memverifikasi data atlet!');
+            $this->closeModals();
+            session()->flash('error', 'Terjadi kesalahan saat memverifikasi atlet: ' . $e->getMessage());
         }
     }
 
-    // Reject atlet
     public function rejectAtlit()
     {
         $this->validate();
 
-        if ($this->atlit->status !== 'pending') {
-            session()->flash('warning', 'Atlet sudah pernah diverifikasi sebelumnya!');
+        if (!$this->atlit || $this->atlit->status_verifikasi !== Atlit::STATUS_VERIFIKASI_PENDING) {
+            session()->flash('warning', 'Data atlet sudah diverifikasi sebelumnya.');
             $this->closeModals();
             return;
         }
 
+        DB::beginTransaction();
         try {
             $this->atlit->update([
-                'status' => 'ditolak',
-                'alasan_ditolak' => $this->alasanPenolakan,
+                'status_verifikasi' => Atlit::STATUS_VERIFIKASI_REJECTED,
+                'catatan_verifikasi' => $this->alasanPenolakan,
                 'verified_by' => Auth::id(),
                 'verified_at' => now(),
             ]);
 
-            Log::info('Atlet rejected', [
+            Log::info('Atlit rejected', [
                 'atlit_id' => $this->atlit->id,
-                'atlit_name' => $this->atlit->nama_lengkap,
                 'reason' => $this->alasanPenolakan,
                 'rejected_by' => Auth::id(),
                 'rejector_name' => Auth::user()->name,
             ]);
 
-            $this->refreshAtletData();
+            DB::commit();
+
+            // PERBAIKAN: Refresh dulu SEBELUM close modal
+            $this->atlit = $this->atlit->fresh([
+                'cabangOlahraga',
+                'kategoriAtlit',
+                'klub',
+                'user',
+                'verifikator',
+                'dokumen' => function ($query) {
+                    $query->orderBy('kategori_berkas')->orderBy('created_at', 'desc');
+                }
+            ]);
+            $this->documentStats = $this->atlit->getDocumentStats();
+
+            // Close modal setelah refresh
             $this->closeModals();
 
+            // Flash message & dispatch browser event
             session()->flash('success', 'Data atlet berhasil ditolak!');
+            $this->dispatch('atlit-rejected');
         } catch (\Exception $e) {
-            Log::error('Error rejecting atlet', [
+            DB::rollBack();
+            Log::error('Failed to reject atlit', [
                 'atlit_id' => $this->atlit->id,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            session()->flash('error', 'Terjadi kesalahan saat menolak data atlet!');
+            $this->closeModals();
+            session()->flash('error', 'Terjadi kesalahan saat menolak atlet: ' . $e->getMessage());
         }
     }
+    // ==========================================================
+    // VERIFY / REJECT DOKUMEN
+    // ==========================================================
 
-    // Verify dokumen
     public function verifyDokumen()
     {
         if (!$this->currentDokumen) {
@@ -250,43 +304,44 @@ class AtlitShow extends Component
         }
 
         if ($this->currentDokumen->status_verifikasi !== 'pending') {
-            session()->flash('warning', 'Dokumen sudah pernah diverifikasi sebelumnya!');
+            session()->flash('warning', 'Dokumen sudah diverifikasi sebelumnya.');
             $this->closeModals();
             return;
         }
 
+        DB::beginTransaction();
         try {
             $this->currentDokumen->update([
                 'status_verifikasi' => 'verified',
                 'verified_by' => Auth::id(),
                 'verified_at' => now(),
                 'alasan_ditolak' => null,
-                'keterangan' => 'Dokumen telah diverifikasi oleh ' . Auth::user()->name
+                'keterangan' => 'Diverifikasi oleh ' . Auth::user()->name,
             ]);
 
-            Log::info('Document verified', [
+            Log::info('Dokumen verified', [
                 'dokumen_id' => $this->currentDokumen->id,
                 'atlit_id' => $this->atlit->id,
-                'document_category' => $this->currentDokumen->kategori_berkas,
                 'verified_by' => Auth::id(),
-                'verifier_name' => Auth::user()->name,
             ]);
+
+            DB::commit();
 
             $this->refreshAtletData();
             $this->closeModals();
-
             session()->flash('success', 'Dokumen berhasil diverifikasi!');
         } catch (\Exception $e) {
-            Log::error('Error verifying document', [
+            DB::rollBack();
+
+            Log::error('Error verifying dokumen', [
                 'dokumen_id' => $this->currentDokumen->id,
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
             ]);
 
-            session()->flash('error', 'Terjadi kesalahan saat memverifikasi dokumen!');
+            session()->flash('error', 'Gagal memverifikasi dokumen: ' . $e->getMessage());
         }
     }
 
-    // Reject dokumen
     public function rejectDokumen()
     {
         $this->validate();
@@ -297,73 +352,61 @@ class AtlitShow extends Component
         }
 
         if ($this->currentDokumen->status_verifikasi !== 'pending') {
-            session()->flash('warning', 'Dokumen sudah pernah diverifikasi sebelumnya!');
+            session()->flash('warning', 'Dokumen sudah diverifikasi sebelumnya.');
             $this->closeModals();
             return;
         }
 
+        DB::beginTransaction();
         try {
             $this->currentDokumen->update([
                 'status_verifikasi' => 'rejected',
                 'alasan_ditolak' => $this->alasanPenolakan,
                 'verified_by' => Auth::id(),
                 'verified_at' => now(),
-                'keterangan' => 'Dokumen ditolak oleh ' . Auth::user()->name . ': ' . $this->alasanPenolakan
+                'keterangan' => 'Ditolak oleh ' . Auth::user()->name . ': ' . $this->alasanPenolakan,
             ]);
 
-            Log::info('Document rejected', [
+            Log::info('Dokumen rejected', [
                 'dokumen_id' => $this->currentDokumen->id,
-                'atlit_id' => $this->atlit->id,
-                'document_category' => $this->currentDokumen->kategori_berkas,
                 'reason' => $this->alasanPenolakan,
                 'rejected_by' => Auth::id(),
-                'rejector_name' => Auth::user()->name,
             ]);
+
+            DB::commit();
 
             $this->refreshAtletData();
             $this->closeModals();
-
             session()->flash('success', 'Dokumen berhasil ditolak!');
         } catch (\Exception $e) {
-            Log::error('Error rejecting document', [
+            DB::rollBack();
+
+            Log::error('Error rejecting dokumen', [
                 'dokumen_id' => $this->currentDokumen->id,
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
             ]);
 
-            session()->flash('error', 'Terjadi kesalahan saat menolak dokumen!');
+            session()->flash('error', 'Gagal menolak dokumen: ' . $e->getMessage());
         }
     }
 
-    // Select dokumen for preview
+    // ==========================================================
+    // OTHER HELPERS
+    // ==========================================================
+
     public function selectDokumen($dokumenId)
     {
         $this->selectedDokumen = DokumenAtlit::find($dokumenId);
 
         if (!$this->selectedDokumen || $this->selectedDokumen->atlit_id !== $this->atlit->id) {
             $this->selectedDokumen = null;
-            session()->flash('error', 'Dokumen tidak dapat dimuat!');
-            return;
+            session()->flash('error', 'Dokumen tidak valid.');
         }
-    }
-
-    // Download document
-    public function downloadDokumen($dokumenId)
-    {
-        $dokumen = DokumenAtlit::find($dokumenId);
-
-        if (!$dokumen || $dokumen->atlit_id !== $this->atlit->id) {
-            session()->flash('error', 'Dokumen tidak ditemukan!');
-            return;
-        }
-
-        // Return download response would be handled differently in Livewire
-        session()->flash('info', 'Fitur download akan segera tersedia!');
     }
 
     public function render()
     {
         $dokumens = $this->atlit->dokumen ?? collect();
-
         return view('livewire.verifikator.atlit-show', compact('dokumens'));
     }
 }

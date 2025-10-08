@@ -10,6 +10,36 @@
         </div>
     @endif
 
+    @if (session()->has('message'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <i class="fas fa-info-circle mr-2"></i>
+            {{ session('message') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if (session()->has('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <i class="fas fa-info-circle mr-2"></i>
+            {{ session('info') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <!-- Total Atlit -->
@@ -34,7 +64,8 @@
 
         <!-- Menunggu Verifikasi -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2 card-stats">
+            <div class="card border-left-warning shadow h-100 py-2 card-stats" style="cursor: pointer;"
+                wire:click="quickFilter('{{ \App\Models\Atlit::STATUS_VERIFIKASI_PENDING }}')">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -54,7 +85,8 @@
 
         <!-- Terverifikasi -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2 card-stats">
+            <div class="card border-left-success shadow h-100 py-2 card-stats" style="cursor: pointer;"
+                wire:click="quickFilter('{{ \App\Models\Atlit::STATUS_VERIFIKASI_VERIFIED }}')">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -74,7 +106,8 @@
 
         <!-- Ditolak -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2 card-stats">
+            <div class="card border-left-danger shadow h-100 py-2 card-stats" style="cursor: pointer;"
+                wire:click="quickFilter('{{ \App\Models\Atlit::STATUS_VERIFIKASI_REJECTED }}')">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -105,6 +138,7 @@
                 </button>
             </div>
         </div>
+
         <div class="card-body">
             <!-- Filters Row -->
             <div class="row mb-4">
@@ -113,16 +147,14 @@
                     <input wire:model.debounce.300ms="search" type="text" class="form-control form-control-sm"
                         placeholder="Cari nama, NIK, email...">
                 </div>
-
                 <div class="col-md-2">
-                    <label class="form-label text-sm font-weight-bold">Status</label>
+                    <label class="form-label text-sm font-weight-bold">Status Verifikasi</label>
                     <select wire:model="statusFilter" class="form-control form-control-sm">
                         @foreach ($statusOptions as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
-
                 <div class="col-md-3">
                     <label class="form-label text-sm font-weight-bold">Cabang Olahraga</label>
                     <select wire:model="caborFilter" class="form-control form-control-sm">
@@ -132,7 +164,6 @@
                         @endforeach
                     </select>
                 </div>
-
                 <div class="col-md-2">
                     <label class="form-label text-sm font-weight-bold">Kategori</label>
                     <select wire:model="kategoriFilter" class="form-control form-control-sm">
@@ -142,7 +173,6 @@
                         @endforeach
                     </select>
                 </div>
-
                 <div class="col-md-2">
                     <label class="form-label text-sm font-weight-bold">Per Halaman</label>
                     <select wire:model="perPage" class="form-control form-control-sm">
@@ -173,7 +203,7 @@
                                 <th>NIK</th>
                                 <th>Cabang Olahraga</th>
                                 <th>Kategori</th>
-                                <th>Status</th>
+                                <th>Status Verifikasi</th>
                                 <th>Dokumen</th>
                                 <th style="width: 120px;">Aksi</th>
                             </tr>
@@ -206,21 +236,21 @@
                                     <td>{{ $atlet->cabangOlahraga->nama_cabang ?? '-' }}</td>
                                     <td>{{ $atlet->kategoriAtlit->nama_kategori ?? '-' }}</td>
                                     <td>
-                                        @if ($atlet->status_verifikasi == 'pending')
+                                        @if ($atlet->status_verifikasi == \App\Models\Atlit::STATUS_VERIFIKASI_PENDING)
                                             <span class="badge badge-warning">
                                                 <i class="fas fa-clock mr-1"></i>Menunggu
                                             </span>
-                                        @elseif($atlet->status_verifikasi == 'diverifikasi')
+                                        @elseif($atlet->status_verifikasi == \App\Models\Atlit::STATUS_VERIFIKASI_VERIFIED)
                                             <span class="badge badge-success">
                                                 <i class="fas fa-check-circle mr-1"></i>Terverifikasi
                                             </span>
-                                        @elseif($atlet->status_verifikasi == 'ditolak')
+                                        @elseif($atlet->status_verifikasi == \App\Models\Atlit::STATUS_VERIFIKASI_REJECTED)
                                             <span class="badge badge-danger">
                                                 <i class="fas fa-times-circle mr-1"></i>Ditolak
                                             </span>
                                         @else
                                             <span
-                                                class="badge badge-secondary">{{ ucfirst($atlet->status_verifikasi) }}</span>
+                                                class="badge badge-secondary">{{ $atlet->status_verifikasi_indonesia }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -232,20 +262,34 @@
                                             $pendingDokumen = $atlet->dokumen
                                                 ->where('status_verifikasi', 'pending')
                                                 ->count();
+                                            $rejectedDokumen = $atlet->dokumen
+                                                ->where('status_verifikasi', 'rejected')
+                                                ->count();
                                         @endphp
                                         <div class="text-sm">
-                                            <span class="badge badge-info">{{ $totalDokumen }} Total</span>
+                                            <span class="badge badge-info" title="Total Dokumen">
+                                                <i class="fas fa-file mr-1"></i>{{ $totalDokumen }}
+                                            </span>
                                             @if ($verifiedDokumen > 0)
-                                                <span class="badge badge-success">{{ $verifiedDokumen }} ✓</span>
+                                                <span class="badge badge-success" title="Dokumen Terverifikasi">
+                                                    <i class="fas fa-check mr-1"></i>{{ $verifiedDokumen }}
+                                                </span>
                                             @endif
                                             @if ($pendingDokumen > 0)
-                                                <span class="badge badge-warning">{{ $pendingDokumen }} ⏳</span>
+                                                <span class="badge badge-warning" title="Dokumen Pending">
+                                                    <i class="fas fa-clock mr-1"></i>{{ $pendingDokumen }}
+                                                </span>
+                                            @endif
+                                            @if ($rejectedDokumen > 0)
+                                                <span class="badge badge-danger" title="Dokumen Ditolak">
+                                                    <i class="fas fa-times mr-1"></i>{{ $rejectedDokumen }}
+                                                </span>
                                             @endif
                                         </div>
                                     </td>
                                     <td>
                                         <a href="{{ route('verifikator.atlit.show', $atlet) }}"
-                                            class="btn btn-primary btn-sm">
+                                            class="btn btn-primary btn-sm" title="Lihat Detail & Verifikasi">
                                             <i class="fas fa-eye mr-1"></i>Detail
                                         </a>
                                     </td>

@@ -24,13 +24,8 @@ class AtlitIndex extends Component
     public $kategoriFilter = '';
     public $perPage = 10;
 
-    // Status options
-    public $statusOptions = [
-        '' => 'Semua Status',
-        'pending' => 'Menunggu Verifikasi',
-        'diverifikasi' => 'Terverifikasi',
-        'ditolak' => 'Ditolak'
-    ];
+    // Status options - KOREKSI: Gunakan konstanta dari Model
+    public $statusOptions = [];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -48,6 +43,15 @@ class AtlitIndex extends Component
     public function mount($initialStats = [])
     {
         $this->initialStats = $initialStats;
+
+        // KOREKSI: Inisialisasi status options dari konstanta Model
+        $this->statusOptions = [
+            '' => 'Semua Status',
+            Atlit::STATUS_VERIFIKASI_PENDING => 'Menunggu Verifikasi',
+            Atlit::STATUS_VERIFIKASI_VERIFIED => 'Terverifikasi',
+            Atlit::STATUS_VERIFIKASI_REJECTED => 'Ditolak'
+        ];
+
         $this->resetPage();
     }
 
@@ -80,17 +84,19 @@ class AtlitIndex extends Component
     {
         $this->reset(['search', 'statusFilter', 'caborFilter', 'kategoriFilter']);
         $this->resetPage();
-        // $this->emit('showAlert', 'info', 'Filter berhasil direset');
+
+        // PERBAIKAN: Gunakan session flash untuk notifikasi
+        session()->flash('message', 'Filter berhasil direset');
     }
 
     public function refreshStats()
     {
-        // Refresh stats in real-time
+        // KOREKSI: Gunakan konstanta dari Model
         $this->initialStats = [
             'total' => Atlit::count(),
-            'pending' => Atlit::where('status_verifikasi', 'pending')->count(),
-            'verified' => Atlit::where('status_verifikasi', 'diverifikasi')->count(),
-            'rejected' => Atlit::where('status_verifikasi', 'ditolak')->count(),
+            'pending' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_PENDING)->count(),
+            'verified' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_VERIFIED)->count(),
+            'rejected' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_REJECTED)->count(),
         ];
     }
 
@@ -98,13 +104,15 @@ class AtlitIndex extends Component
     {
         $this->statusFilter = $status;
         $this->resetPage();
-        $this->emit('showAlert', 'info', 'Filter diterapkan: ' . ($this->statusOptions[$status] ?? 'Semua Status'));
+
+        // PERBAIKAN: Gunakan session flash untuk notifikasi
+        session()->flash('message', 'Filter diterapkan: ' . ($this->statusOptions[$status] ?? 'Semua Status'));
     }
 
     public function exportData()
     {
-        // Method untuk export data (bisa dikembangkan kemudian)
-        $this->emit('showAlert', 'info', 'Fitur export akan segera tersedia!');
+        // PERBAIKAN: Gunakan session flash untuk notifikasi
+        session()->flash('info', 'Fitur export akan segera tersedia!');
     }
 
     public function render()
@@ -124,14 +132,10 @@ class AtlitIndex extends Component
                 }
             ])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('nama_lengkap', 'like', '%' . $this->search . '%')
-                        ->orWhere('nik', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%');
-                });
+                $query->search($this->search); // KOREKSI: Gunakan scope search dari Model
             })
             ->when($this->statusFilter, function ($query) {
-                $query->where('status_verifikasi', $this->statusFilter);
+                $query->byStatusVerifikasi($this->statusFilter); // KOREKSI: Gunakan scope dari Model
             })
             ->when($this->caborFilter, function ($query) {
                 $query->where('cabang_olahraga_id', $this->caborFilter);
@@ -145,12 +149,12 @@ class AtlitIndex extends Component
         $cabors = Cabor::orderBy('nama_cabang')->get();
         $kategoris = KategoriAtlit::orderBy('nama_kategori')->get();
 
-        // Use current stats or initial stats
+        // KOREKSI: Gunakan konstanta dari Model untuk stats
         $stats = !empty($this->initialStats) ? $this->initialStats : [
             'total' => Atlit::count(),
-            'pending' => Atlit::where('status_verifikasi', 'pending')->count(),
-            'verified' => Atlit::where('status_verifikasi', 'diverifikasi')->count(),
-            'rejected' => Atlit::where('status_verifikasi', 'ditolak')->count(),
+            'pending' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_PENDING)->count(),
+            'verified' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_VERIFIED)->count(),
+            'rejected' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_REJECTED)->count(),
         ];
 
         return view('livewire.verifikator.atlit-index', compact('atlets', 'cabors', 'kategoris', 'stats'));

@@ -19,215 +19,135 @@ class Atlit extends Model
         'tanggal_lahir',
         'jenis_kelamin',
         'alamat',
-
         'telepon',
         'email',
-
         'klub_id',
         'cabang_olahraga_id',
         'kategori_atlit_id',
-
         'foto',
         'prestasi',
         'status',
+        'status_verifikasi',
         'user_id',
+        'verified_by',
+        'verified_at',
+        'catatan_verifikasi',
     ];
 
     protected $casts = [
         'tanggal_lahir' => 'date',
-
         'klub_id' => 'integer',
         'cabang_olahraga_id' => 'integer',
         'kategori_atlit_id' => 'integer',
         'user_id' => 'integer',
+        'verified_by' => 'integer',
+        'verified_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    // Relasi dengan Klub
+    // ============================================
+    // RELASI
+    // ============================================
+
     public function klub()
     {
         return $this->belongsTo(Klub::class, 'klub_id');
     }
 
-    // Relasi dengan CabangOlahraga
     public function cabangOlahraga()
     {
         return $this->belongsTo(Cabor::class, 'cabang_olahraga_id');
     }
 
-    // Relasi dengan KategoriAtlit
     public function kategoriAtlit()
     {
         return $this->belongsTo(KategoriAtlit::class, 'kategori_atlit_id');
     }
 
-    // Relasi dengan User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 
     public function verifikator()
     {
         return $this->belongsTo(User::class, 'verified_by');
     }
 
-    // Relasi dengan DokumenAtlit
     public function dokumen()
     {
         return $this->hasMany(DokumenAtlit::class, 'atlit_id');
     }
 
+    public function prestasi()
+    {
+        return $this->hasMany(Prestasi::class, 'atlit_id');
+    }
 
-    // Konstanta status
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_VERIFIED = 'diverifikasi';
-    public const STATUS_REJECTED = 'ditolak';
+    // ============================================
+    // KONSTANTA STATUS VERIFIKASI
+    // ============================================
 
-    public const STATUS_OPTIONS = [
-        self::STATUS_PENDING => 'Menunggu Verifikasi',
-        self::STATUS_VERIFIED => 'Terverifikasi',
-        self::STATUS_REJECTED => 'Ditolak',
+    public const STATUS_VERIFIKASI_PENDING = 'pending';
+    public const STATUS_VERIFIKASI_VERIFIED = 'diverifikasi';
+    public const STATUS_VERIFIKASI_REJECTED = 'ditolak';
+
+    public const STATUS_VERIFIKASI_OPTIONS = [
+        self::STATUS_VERIFIKASI_PENDING => 'Menunggu Verifikasi',
+        self::STATUS_VERIFIKASI_VERIFIED => 'Terverifikasi',
+        self::STATUS_VERIFIKASI_REJECTED => 'Ditolak',
     ];
 
-    // Accessor untuk status dalam bahasa Indonesia
+    // ============================================
+    // KONSTANTA STATUS ATLET (Aktif/Nonaktif)
+    // ============================================
+
+    public const STATUS_AKTIF = 'aktif';
+    public const STATUS_NONAKTIF = 'nonaktif';
+    public const STATUS_PENSIUN = 'pensiun';
+
+    public const STATUS_OPTIONS = [
+        self::STATUS_AKTIF => 'Aktif',
+        self::STATUS_NONAKTIF => 'Nonaktif',
+        self::STATUS_PENSIUN => 'Pensiun',
+    ];
+
+    // ============================================
+    // ACCESSOR - STATUS VERIFIKASI
+    // ============================================
+
+    public function getStatusVerifikasiIndonesiaAttribute()
+    {
+        return self::STATUS_VERIFIKASI_OPTIONS[$this->status_verifikasi] ?? $this->status_verifikasi;
+    }
+
+    public function getStatusVerifikasiBadgeClassAttribute()
+    {
+        return match ($this->status_verifikasi) {
+            self::STATUS_VERIFIKASI_PENDING => 'badge-warning',
+            self::STATUS_VERIFIKASI_VERIFIED => 'badge-success',
+            self::STATUS_VERIFIKASI_REJECTED => 'badge-danger',
+            default => 'badge-secondary'
+        };
+    }
+
+    public function getStatusVerifikasiBadgeAttribute()
+    {
+        $class = $this->status_verifikasi_badge_class;
+        $text = $this->status_verifikasi_indonesia;
+        return "<span class='badge {$class}'>{$text}</span>";
+    }
+
+    // ============================================
+    // ACCESSOR - STATUS ATLET
+    // ============================================
+
     public function getStatusIndonesiaAttribute()
     {
         return self::STATUS_OPTIONS[$this->status] ?? $this->status;
     }
 
-    // Accessor untuk badge class berdasarkan status
-    public function getStatusBadgeClassAttribute()
-    {
-        return match ($this->status) {
-            self::STATUS_PENDING => 'badge-warning',
-            self::STATUS_VERIFIED => 'badge-success',
-            self::STATUS_REJECTED => 'badge-danger',
-            default => 'badge-secondary'
-        };
-    }
-
-    // Scope untuk filter berdasarkan status
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status_verifikasi', $status);
-    }
-
-    // Scope untuk atlet yang menunggu verifikasi
-    public function scopePending($query)
-    {
-        return $query->where('status_verifikasi', self::STATUS_PENDING);
-    }
-
-    // Scope untuk atlet yang sudah terverifikasi
-    public function scopeVerified($query)
-    {
-        return $query->where('status_verifikasi', self::STATUS_VERIFIED);
-    }
-
-    // Scope untuk atlet yang ditolak
-    public function scopeRejected($query)
-    {
-        return $query->where('status_verifikasi', self::STATUS_REJECTED);
-    }
-
-    // Method untuk cek apakah atlet sudah terverifikasi
-    public function isVerified()
-    {
-        return $this->status_verifikasi === self::STATUS_VERIFIED;
-    }
-
-    // Method untuk cek apakah atlet ditolak
-    public function isRejected()
-    {
-        return $this->status_verifikasi === self::STATUS_REJECTED;
-    }
-
-    // Method untuk cek apakah atlet masih pending
-    public function isPending()
-    {
-        return $this->status_verifikasi === self::STATUS_PENDING;
-    }
-
-    // Method untuk menghitung persentase dokumen terverifikasi
-    public function getDocumentVerificationPercentage()
-    {
-        $totalDocuments = $this->dokumen->count();
-
-        if ($totalDocuments === 0) {
-            return 0;
-        }
-
-        $verifiedDocuments = $this->dokumen->where('status_verifikasi', 'verified')->count();
-
-        return round(($verifiedDocuments / $totalDocuments) * 100, 2);
-    }
-
-    // Method untuk cek apakah semua dokumen sudah terverifikasi
-    public function hasAllDocumentsVerified()
-    {
-        return $this->dokumen->count() > 0 &&
-            $this->dokumen->where('status_verifikasi', 'verified')->count() === $this->dokumen->count();
-    }
-
-    // Method untuk cek apakah ada dokumen yang ditolak
-    public function hasRejectedDocuments()
-    {
-        return $this->dokumen->where('status_verifikasi', 'rejected')->count() > 0;
-    }
-
-    // Method untuk mendapatkan statistik dokumen
-    public function getDocumentStats()
-    {
-        $dokumens = $this->dokumen;
-
-        return [
-            'total' => $dokumens->count(),
-            'verified' => $dokumens->where('status_verifikasi', 'verified')->count(),
-            'pending' => $dokumens->where('status_verifikasi', 'pending')->count(),
-            'rejected' => $dokumens->where('status_verifikasi', 'rejected')->count(),
-        ];
-    }
-
-
-    // Scope untuk status aktif
-    public function scopeAktif($query)
-    {
-        return $query->where('status', 'aktif');
-    }
-
-    // Scope untuk status nonaktif
-    public function scopeNonaktif($query)
-    {
-        return $query->where('status', 'nonaktif');
-    }
-
-    // Scope untuk status pensiun
-    public function scopePensiun($query)
-    {
-        return $query->where('status', 'pensiun');
-    }
-
-    // Scope untuk pencarian
-    public function scopeSearch($query, $term)
-    {
-        return $query->where(function ($q) use ($term) {
-            $q->where('nama_lengkap', 'like', '%' . $term . '%')
-                ->orWhere('nik', 'like', '%' . $term . '%')
-                ->orWhere('email', 'like', '%' . $term . '%')
-                // ->orWhere('nomor_lisensi', 'like', '%' . $term . '%')
-                ->orWhereHas('klub', function ($qq) use ($term) {
-                    $qq->where('nama_klub', 'like', '%' . $term . '%');
-                })
-                ->orWhereHas('cabangOlahraga', function ($qq) use ($term) {
-                    $qq->where('nama_cabang', 'like', '%' . $term . '%');
-                });
-        });
-    }
-
-    // Accessor untuk badge status
     public function getStatusBadgeAttribute()
     {
         $badges = [
@@ -238,13 +158,132 @@ class Atlit extends Model
         return $badges[$this->status] ?? '<span class="badge badge-secondary">Unknown</span>';
     }
 
-    // Accessor untuk jenis kelamin
+    // ============================================
+    // SCOPE - STATUS VERIFIKASI
+    // ============================================
+
+    public function scopeByStatusVerifikasi($query, $status)
+    {
+        return $query->where('status_verifikasi', $status);
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status_verifikasi', self::STATUS_VERIFIKASI_PENDING);
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->where('status_verifikasi', self::STATUS_VERIFIKASI_VERIFIED);
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status_verifikasi', self::STATUS_VERIFIKASI_REJECTED);
+    }
+
+    // ============================================
+    // SCOPE - STATUS ATLET
+    // ============================================
+
+    public function scopeAktif($query)
+    {
+        return $query->where('status', self::STATUS_AKTIF);
+    }
+
+    public function scopeNonaktif($query)
+    {
+        return $query->where('status', self::STATUS_NONAKTIF);
+    }
+
+    public function scopePensiun($query)
+    {
+        return $query->where('status', self::STATUS_PENSIUN);
+    }
+
+    // ============================================
+    // METHOD CHECKER - STATUS VERIFIKASI
+    // ============================================
+
+    public function isVerified()
+    {
+        return $this->status_verifikasi === self::STATUS_VERIFIKASI_VERIFIED;
+    }
+
+    public function isRejected()
+    {
+        return $this->status_verifikasi === self::STATUS_VERIFIKASI_REJECTED;
+    }
+
+    public function isPending()
+    {
+        return $this->status_verifikasi === self::STATUS_VERIFIKASI_PENDING;
+    }
+
+    // ============================================
+    // METHOD - DOKUMEN VERIFIKASI
+    // ============================================
+
+    public function getDocumentVerificationPercentage()
+    {
+        $totalDocuments = $this->dokumen->count();
+        if ($totalDocuments === 0) {
+            return 0;
+        }
+        $verifiedDocuments = $this->dokumen->where('status_verifikasi', 'verified')->count();
+        return round(($verifiedDocuments / $totalDocuments) * 100, 2);
+    }
+
+    public function hasAllDocumentsVerified()
+    {
+        return $this->dokumen->count() > 0 &&
+            $this->dokumen->where('status_verifikasi', 'verified')->count() === $this->dokumen->count();
+    }
+
+    public function hasRejectedDocuments()
+    {
+        return $this->dokumen->where('status_verifikasi', 'rejected')->count() > 0;
+    }
+
+    public function getDocumentStats()
+    {
+        $dokumens = $this->dokumen;
+        return [
+            'total' => $dokumens->count(),
+            'verified' => $dokumens->where('status_verifikasi', 'verified')->count(),
+            'pending' => $dokumens->where('status_verifikasi', 'pending')->count(),
+            'rejected' => $dokumens->where('status_verifikasi', 'rejected')->count(),
+        ];
+    }
+
+    // ============================================
+    // SCOPE - PENCARIAN
+    // ============================================
+
+    public function scopeSearch($query, $term)
+    {
+        return $query->where(function ($q) use ($term) {
+            $q->where('nama_lengkap', 'like', '%' . $term . '%')
+                ->orWhere('nik', 'like', '%' . $term . '%')
+                ->orWhere('email', 'like', '%' . $term . '%')
+                ->orWhereHas('klub', function ($qq) use ($term) {
+                    $qq->where('nama_klub', 'like', '%' . $term . '%');
+                })
+                ->orWhereHas('cabangOlahraga', function ($qq) use ($term) {
+                    $qq->where('nama_cabang', 'like', '%' . $term . '%');
+                });
+        });
+    }
+
+    // ============================================
+    // ACCESSOR - DATA ATLET
+    // ============================================
+
     public function getJenisKelaminLengkapAttribute()
     {
         return $this->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
     }
 
-    // Accessor untuk umur
     public function getUmurAttribute()
     {
         if ($this->tanggal_lahir) {
@@ -253,7 +292,6 @@ class Atlit extends Model
         return null;
     }
 
-    // Accessor untuk alamat lengkap
     public function getAlamatLengkapAttribute()
     {
         $alamat = $this->alamat;
@@ -269,7 +307,6 @@ class Atlit extends Model
         return $alamat;
     }
 
-    // Accessor untuk foto URL
     public function getFotoUrlAttribute()
     {
         if ($this->foto) {
@@ -278,16 +315,13 @@ class Atlit extends Model
         return asset('template/img/default-avatar.png');
     }
 
-    // Accessor untuk status lisensi
     public function getStatusLisensiAttribute()
     {
         if (!$this->tanggal_expired_lisensi) {
             return '<span class="badge badge-secondary">Tidak Ada</span>';
         }
-
         $today = now();
         $expired = $this->tanggal_expired_lisensi;
-
         if ($expired < $today) {
             return '<span class="badge badge-danger">Expired</span>';
         } elseif ($expired->diffInDays($today) <= 30) {
@@ -297,57 +331,15 @@ class Atlit extends Model
         }
     }
 
-    // Method untuk membuat user otomatis
-    public function createUser()
-    {
-        if (!$this->user_id && $this->email) {
-            $user = User::create([
-                'name' => $this->nama_lengkap,
-                'email' => $this->email,
-                'password' => Hash::make('password123'),
-            ]);
+    // ============================================
+    // ACCESSOR - PRESTASI
+    // ============================================
 
-            $this->update(['user_id' => $user->id]);
-            return $user;
-        }
-        return null;
-    }
-
-    // Validation rules
-    public static function rules($id = null)
-    {
-        return [
-            'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|string|max:20|unique:atlit,nik,' . $id,
-            'tempat_lahir' => 'required|string|max:100',
-            'tanggal_lahir' => 'required|date|before:today',
-            'jenis_kelamin' => 'required|in:L,P',
-
-            'telepon' => 'nullable|string|max:20',
-            'email' => 'nullable|email|unique:atlit,email,' . $id,
-
-            'klub_id' => 'required|exists:klub,id',
-            'cabang_olahraga_id' => 'required|exists:cabang_olahraga,id',
-            'kategori_atlit_id' => 'required|exists:kategori_atlit,id',
-
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'prestasi' => 'nullable|string',
-            'status' => 'required|in:aktif,nonaktif,pensiun',
-        ];
-    }
-
-    public function prestasi()
-    {
-        return $this->hasMany(Prestasi::class, 'atlit_id');
-    }
-
-    // Accessor untuk jumlah prestasi
     public function getJumlahPrestasiAttribute()
     {
         return $this->prestasi()->verified()->count();
     }
 
-    // Accessor untuk prestasi terbaik
     public function getPrestasiBaikAttribute()
     {
         return $this->prestasi()
@@ -362,11 +354,9 @@ class Atlit extends Model
             ->first();
     }
 
-    // Method untuk mendapatkan statistik prestasi atlet
     public function getStatistikPrestasi()
     {
         $prestasi = $this->prestasi()->verified();
-
         return [
             'total' => $prestasi->count(),
             'juara_1' => (clone $prestasi)->where('peringkat', '1')->count(),
@@ -377,6 +367,47 @@ class Atlit extends Model
             'perunggu' => (clone $prestasi)->where('medali', 'Perunggu')->count(),
             'nasional' => (clone $prestasi)->where('jenis_kejuaraan', 'Nasional')->count(),
             'internasional' => (clone $prestasi)->where('jenis_kejuaraan', 'Internasional')->count(),
+        ];
+    }
+
+    // ============================================
+    // METHOD UTILITY
+    // ============================================
+
+    public function createUser()
+    {
+        if (!$this->user_id && $this->email) {
+            $user = User::create([
+                'name' => $this->nama_lengkap,
+                'email' => $this->email,
+                'password' => Hash::make('password123'),
+            ]);
+            $this->update(['user_id' => $user->id]);
+            return $user;
+        }
+        return null;
+    }
+
+    // ============================================
+    // VALIDATION RULES
+    // ============================================
+
+    public static function rules($id = null)
+    {
+        return [
+            'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'required|string|max:20|unique:atlit,nik,' . $id,
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date|before:today',
+            'jenis_kelamin' => 'required|in:L,P',
+            'telepon' => 'nullable|string|max:20',
+            'email' => 'nullable|email|unique:atlit,email,' . $id,
+            'klub_id' => 'required|exists:klub,id',
+            'cabang_olahraga_id' => 'required|exists:cabang_olahraga,id',
+            'kategori_atlit_id' => 'required|exists:kategori_atlit,id',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'prestasi' => 'nullable|string',
+            'status' => 'required|in:aktif,nonaktif,pensiun',
         ];
     }
 }
