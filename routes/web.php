@@ -160,6 +160,7 @@ Route::middleware([
             Route::put('/{atlit}/dokumen/{dokumen}/verify', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'verifyDokumen'])->name('dokumen.verify');
             Route::put('/{atlit}/dokumen/{dokumen}/reject', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'rejectDokumen'])->name('dokumen.reject');
         });
+        Route::get('/statistik', [App\Http\Controllers\Verifikator\AtlitVerifikasiController::class, 'statistikVerifikasi'])->name('statistik');
 
         Route::get('/dokumen_atlit/{file_name}', function ($file_name) {
             $path = storage_path('app/private/dokumen_atlit/' . $file_name);

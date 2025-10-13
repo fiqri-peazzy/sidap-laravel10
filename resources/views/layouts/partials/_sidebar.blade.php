@@ -348,8 +348,8 @@
         <div class="sidebar-heading">Laporan</div>
 
         <!-- Nav Item - Statistik Verifikasi -->
-        <li class="nav-item">
-            <a class="nav-link" href="#" onclick="alert('Fitur statistik verifikasi akan segera tersedia!')">
+        <li class="nav-item {{ request()->routeIs('verifikator.statistik') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('verifikator.statistik') }}">
                 <i class="fas fa-fw fa-chart-pie"></i>
                 <span>Statistik Verifikasi</span>
             </a>

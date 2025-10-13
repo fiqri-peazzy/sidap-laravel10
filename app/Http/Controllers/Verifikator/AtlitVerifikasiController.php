@@ -521,4 +521,9 @@ class AtlitVerifikasiController extends Controller
             ], 500);
         }
     }
+
+    public function statistikVerifikasi()
+    {
+        return view('verifikator.statistik');
+    }
 }
