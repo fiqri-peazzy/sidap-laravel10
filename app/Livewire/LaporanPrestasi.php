@@ -87,7 +87,7 @@ class LaporanPrestasi extends Component
         // Filter parameter kosong
         $params = array_filter($params);
 
-        $url = route('laporan.prestasi.cetak', $params);
+        $url = route('admin.laporan.prestasi.cetak', $params);
         return redirect()->to($url);
     }
 

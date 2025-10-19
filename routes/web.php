@@ -34,9 +34,7 @@ Route::middleware([
     // ADMIN ROUTES
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         // Admin Dashboard
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
 
         // Data Master Routes - Hanya Admin
         Route::get('/cabang-olahraga', function () {
@@ -97,9 +95,7 @@ Route::middleware([
     // ATLIT ROUTES
     Route::middleware('role:user')->prefix('atlit')->name('atlit.')->group(function () {
         // Atlit Dashboard
-        Route::get('/dashboard', function () {
-            return view('atlit.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'atletDashboard'])->name('dashboard');
 
         // Atlit dapat melihat profil sendiri dan mengupdate
         Route::get('/profil', [AtlitController::class, 'profil'])->name('profil');

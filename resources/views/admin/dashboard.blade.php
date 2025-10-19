@@ -1,25 +1,53 @@
 @extends('layouts.app')
-
 @section('pageTitle', 'Dashboard')
+
+@push('styles')
+    <style>
+        .icon-circle {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .widget-stats {
+            transition: transform 0.2s;
+        }
+
+        .widget-stats:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+    </style>
+@endpush
 
 @section('content')
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard Sistem Data Atlit</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+        </a>
     </div>
 
-    <!-- Content Row -->
+    <!-- Content Row - Statistik Utama -->
     <div class="row">
-
         <!-- Total Atlit Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card border-left-primary shadow h-100 py-2 widget-stats">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Total Atlit</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ \App\Models\Atlit::count() }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_atlit'] }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-user-friends fa-2x text-gray-300"></i>
@@ -31,14 +59,13 @@
 
         <!-- Cabang Olahraga Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
+            <div class="card border-left-success shadow h-100 py-2 widget-stats">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Cabang Olahraga</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ \App\Models\Cabor::count() }}
-                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_cabor'] }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-running fa-2x text-gray-300"></i>
@@ -50,13 +77,13 @@
 
         <!-- Klub Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
+            <div class="card border-left-info shadow h-100 py-2 widget-stats">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                 Total Klub</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ \App\Models\Klub::count() }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_klub'] }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -68,13 +95,13 @@
 
         <!-- Prestasi Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card border-left-warning shadow h-100 py-2 widget-stats">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                 Total Prestasi</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ \App\Models\Prestasi::count() }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total_prestasi'] }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-trophy fa-2x text-gray-300"></i>
@@ -85,9 +112,110 @@
         </div>
     </div>
 
+    <!-- Content Row - Status Verifikasi -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Verifikasi</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $verifikasiStats['pending'] }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Terverifikasi</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $verifikasiStats['verified'] }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Ditolak</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $verifikasiStats['rejected'] }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Medali Emas</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $prestasiStats['emas'] }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-medal fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row - Charts -->
+    <div class="row">
+        <!-- Pertumbuhan Atlit -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Pertumbuhan Atlit (6 Bulan Terakhir)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartAtlit"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribusi Cabang Olahraga -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Top 5 Cabang Olahraga</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartCabor"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Content Row -->
     <div class="row">
-
         <!-- Klub Terbaru -->
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
@@ -108,10 +236,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @php
-                        $klubTerbaru = \App\Models\Klub::with('cabangOlahraga')->latest()->take(5)->get();
-                    @endphp
-
                     <div class="table-responsive">
                         <table class="table table-borderless">
                             <thead>
@@ -133,8 +257,8 @@
                                                 <div>
                                                     <div class="font-weight-bold text-sm">{{ $klub->nama_klub }}</div>
                                                     @if ($klub->tahun_berdiri)
-                                                        <div class="text-xs text-gray-500">Sejak {{ $klub->tahun_berdiri }}
-                                                        </div>
+                                                        <div class="text-xs text-gray-500">Sejak
+                                                            {{ $klub->tahun_berdiri }}</div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -172,36 +296,6 @@
                     <h6 class="m-0 font-weight-bold text-primary">Aktivitas Terbaru</h6>
                 </div>
                 <div class="card-body">
-                    @php
-                        $aktivitasCabang = \App\Models\Cabor::latest()
-                            ->take(3)
-                            ->get()
-                            ->map(function ($item) {
-                                return (object) [
-                                    'type' => 'cabang',
-                                    'title' => 'Cabang ' . $item->nama_cabang . ' ditambahkan',
-                                    'created_at' => $item->created_at,
-                                    'icon' => 'fas fa-running',
-                                    'color' => 'primary',
-                                ];
-                            });
-
-                        $aktivitasKlub = \App\Models\Klub::latest()
-                            ->take(3)
-                            ->get()
-                            ->map(function ($item) {
-                                return (object) [
-                                    'type' => 'klub',
-                                    'title' => 'Klub ' . $item->nama_klub . ' terdaftar',
-                                    'created_at' => $item->created_at,
-                                    'icon' => 'fas fa-users',
-                                    'color' => 'info',
-                                ];
-                            });
-
-                        $aktivitas = $aktivitasCabang->concat($aktivitasKlub)->sortByDesc('created_at')->take(5);
-                    @endphp
-
                     @forelse($aktivitas as $activity)
                         <div class="d-flex align-items-center mb-3">
                             <div class="mr-3">
@@ -225,9 +319,86 @@
         </div>
     </div>
 
+    <!-- Content Row - Atlit Berprestasi & Pending Verifikasi -->
+    <div class="row">
+        <!-- Atlit Berprestasi -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Atlit Berprestasi</h6>
+                </div>
+                <div class="card-body">
+                    @forelse($atletBerprestasi as $atlet)
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                            <div class="mr-3">
+                                <img src="{{ $atlet->foto ? asset('storage/atlit/foto/' . $atlet->foto) : asset('template/img/undraw_profile.svg') }}"
+                                    alt="{{ $atlet->nama_lengkap }}" class="rounded-circle"
+                                    style="width: 50px; height: 50px; object-fit: cover;">
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="font-weight-bold">{{ $atlet->nama_lengkap }}</div>
+                                <div class="text-xs text-gray-500">
+                                    {{ $atlet->cabangOlahraga->nama_cabang ?? '-' }} |
+                                    {{ $atlet->klub->nama_klub ?? '-' }}
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge badge-success badge-pill">
+                                    <i class="fas fa-trophy"></i> {{ $atlet->prestasi_count }}
+                                </span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-trophy fa-2x mb-2"></i>
+                            <p>Belum ada data atlit berprestasi</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Atlit Pending Verifikasi -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">Atlit Pending Verifikasi</h6>
+                </div>
+                <div class="card-body">
+                    @forelse($atlitPendingVerifikasi as $atlet)
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                            <div class="mr-3">
+                                <img src="{{ $atlet->foto ? asset('storage/atlit/foto/' . $atlet->foto) : asset('template/img/undraw_profile.svg') }}"
+                                    alt="{{ $atlet->nama_lengkap }}" class="rounded-circle"
+                                    style="width: 50px; height: 50px; object-fit: cover;">
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="font-weight-bold">{{ $atlet->nama_lengkap }}</div>
+                                <div class="text-xs text-gray-500">
+                                    {{ $atlet->cabangOlahraga->nama_cabang ?? '-' }} |
+                                    {{ $atlet->klub->nama_klub ?? '-' }}
+                                </div>
+                                <div class="text-xs text-muted">
+                                    <i class="fas fa-clock"></i> {{ $atlet->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                            <div>
+                                {!! $atlet->status_verifikasi_badge !!}
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <p>Tidak ada atlit yang menunggu verifikasi</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Content Row -->
     <div class="row">
-
         <!-- Quick Actions -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
@@ -249,13 +420,13 @@
                             </a>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <a href="" class="btn btn-success btn-block">
+                            <a href="{{ route('admin.atlit.index') }}" class="btn btn-success btn-block">
                                 <i class="fas fa-user-friends mr-2"></i>
                                 Kelola Atlit
                             </a>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <a href="" class="btn btn-warning btn-block">
+                            <a href="{{ route('prestasi.index') }}" class="btn btn-warning btn-block">
                                 <i class="fas fa-trophy mr-2"></i>
                                 Kelola Prestasi
                             </a>
@@ -272,33 +443,23 @@
                     <h6 class="m-0 font-weight-bold text-primary">Statistik Klub</h6>
                 </div>
                 <div class="card-body">
-                    @php
-                        $klubAktif = \App\Models\Klub::aktif()->count();
-                        $klubNonaktif = \App\Models\Klub::nonaktif()->count();
-                        $cabangAktif = \App\Models\Cabor::aktif()->count();
-                        $klubPerProvinsi = \App\Models\Klub::selectRaw('provinsi, COUNT(*) as total')
-                            ->groupBy('provinsi')
-                            ->orderByDesc('total')
-                            ->first();
-                    @endphp
-
                     <div class="row text-center">
                         <div class="col-6 mb-3">
                             <div class="border-left-primary p-3">
                                 <div class="text-primary font-weight-bold">Klub Aktif</div>
-                                <div class="h5 mb-0">{{ $klubAktif }}</div>
+                                <div class="h5 mb-0">{{ $klubStats['aktif'] }}</div>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
                             <div class="border-left-success p-3">
                                 <div class="text-success font-weight-bold">Cabang Tersedia</div>
-                                <div class="h5 mb-0">{{ $cabangAktif }}</div>
+                                <div class="h5 mb-0">{{ $klubStats['cabang_aktif'] }}</div>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
                             <div class="border-left-info p-3">
                                 <div class="text-info font-weight-bold">Klub Nonaktif</div>
-                                <div class="h5 mb-0">{{ $klubNonaktif }}</div>
+                                <div class="h5 mb-0">{{ $klubStats['nonaktif'] }}</div>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
@@ -315,19 +476,9 @@
                             </div>
                         </div>
                     </div>
-
-                    @if ($klubAktif > 0)
+                    @if ($klubStats['aktif'] > 0)
                         <hr>
                         <h6 class="text-primary mb-3">Distribusi Klub per Kota</h6>
-                        @php
-                            $klubPerKota = \App\Models\Klub::selectRaw('kota, COUNT(*) as total')
-                                ->where('status', 'aktif')
-                                ->groupBy('kota')
-                                ->orderByDesc('total')
-                                ->take(3)
-                                ->get();
-                        @endphp
-
                         @foreach ($klubPerKota as $kota)
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>{{ $kota->kota }}</div>
@@ -341,4 +492,123 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart Prestasi -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Distribusi Prestasi per Tingkat Kejuaraan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartPrestasi"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data dari Controller
+        const dataAtlit = @json($chartAtlit);
+        const dataCabor = @json($chartCabor);
+        const dataPrestasi = @json($chartPrestasi);
+
+        // Chart Pertumbuhan Atlit
+        const ctxAtlit = document.getElementById('chartAtlit').getContext('2d');
+        new Chart(ctxAtlit, {
+            type: 'line',
+            data: {
+                labels: dataAtlit.map(item => item.bulan),
+                datasets: [{
+                    label: 'Jumlah Atlit',
+                    data: dataAtlit.map(item => item.total),
+                    borderColor: 'rgb(78, 115, 223)',
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                // maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart Distribusi Cabang Olahraga
+        const ctxCabor = document.getElementById('chartCabor').getContext('2d');
+        new Chart(ctxCabor, {
+            type: 'doughnut',
+            data: {
+                labels: dataCabor.map(item => item.nama),
+                datasets: [{
+                    data: dataCabor.map(item => item.total),
+                    backgroundColor: [
+                        'rgb(78, 115, 223)',
+                        'rgb(28, 200, 138)',
+                        'rgb(54, 185, 204)',
+                        'rgb(246, 194, 62)',
+                        'rgb(231, 74, 59)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Chart Prestasi per Tingkat
+        const ctxPrestasi = document.getElementById('chartPrestasi').getContext('2d');
+        new Chart(ctxPrestasi, {
+            type: 'bar',
+            data: {
+                labels: dataPrestasi.map(item => item.tingkat),
+                datasets: [{
+                    label: 'Jumlah Prestasi',
+                    data: dataPrestasi.map(item => item.total),
+                    backgroundColor: 'rgb(246, 194, 62)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+@endpush

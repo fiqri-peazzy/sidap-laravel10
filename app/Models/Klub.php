@@ -107,10 +107,10 @@ class Klub extends Model
         return $this->hasMany(Atlit::class, 'klub_id');
     }
 
-    // public function pelatih()
-    // {
-    //     return $this->hasMany(Pelatih::class, 'klub_id');
-    // }
+    public function pelatih()
+    {
+        return $this->hasMany(Pelatih::class, 'klub_id');
+    }
 
     // Relasi many-to-many dengan CabangOlahraga
     public function cabangOlahraga()

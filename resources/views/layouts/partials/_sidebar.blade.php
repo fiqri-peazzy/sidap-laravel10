@@ -217,27 +217,17 @@
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <!-- Heading -->
-        <div class="sidebar-heading">Prestasi Saya</div>
-
         <!-- Nav Item - Prestasi Menu -->
-        <li class="nav-item {{ request()->routeIs('atlit.prestasi.*') ? 'active' : '' }}">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePrestasi"
-                aria-expanded="{{ request()->routeIs('atlit.prestasi.*') ? 'true' : 'false' }}"
-                aria-controls="collapsePrestasi">
-                <i class="fas fa-fw fa-trophy"></i>
-                <span>Prestasi</span>
-            </a>
-            <div id="collapsePrestasi" class="collapse {{ request()->routeIs('atlit.prestasi.*') ? 'show' : '' }}"
-                aria-labelledby="headingPrestasi" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Prestasi Saya:</h6>
-                    <a class="collapse-item {{ request()->routeIs('atlit.prestasi.index') ? 'active' : '' }}"
-                        href="{{ route('atlit.prestasi.index') }}">Daftar Prestasi</a>
 
-                </div>
-            </div>
+        <div class="sidebar-heading">Prestasi Saya</div>
+        <li class="nav-item {{ request()->routeIs('atlit.prestasi.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('atlit.prestasi.index') }}">
+                <i class="fas fa-fw fa-trophy"></i>
+
+                <span>Prestasi Saya</span>
+            </a>
         </li>
+
 
         <!-- Divider -->
         <hr class="sidebar-divider">
