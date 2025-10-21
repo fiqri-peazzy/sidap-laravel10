@@ -134,9 +134,7 @@ Route::middleware([
     // VERIFIKATOR ROUTES
     Route::middleware('role:verifikator')->prefix('verifikator')->name('verifikator.')->group(function () {
         // Verifikator Dashboard
-        Route::get('/dashboard', function () {
-            return view('verifikator.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'verifikatorDashboard'])->name('dashboard');
 
         // Verifikator dapat memverifikasi prestasi
         Route::prefix('prestasi')->name('prestasi.')->group(function () {

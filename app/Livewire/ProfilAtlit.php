@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Atlit;
 use App\Models\User;
+use App\Models\Prestasi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -15,21 +16,26 @@ class ProfilAtlit extends Component
     use WithFileUploads;
 
     public $atlit;
-    
+    public $prestasi; // Collection prestasi dari relasi
+    public $statistikPrestasi; // Statistik prestasi
+
     // Fields yang boleh diupdate
     public $alamat;
     public $telepon;
     public $email;
     public $foto;
     public $fotoTemp; // untuk preview foto baru
-    
+
     // Status editing untuk masing-masing field
     public $editingAlamat = false;
     public $editingTelepon = false;
     public $editingEmail = false;
     public $editingFoto = false;
-    
+
     public $showEmailWarning = false;
+
+    // Filter prestasi
+    public $filterStatus = 'all'; // all, verified, pending, rejected
 
     protected function rules()
     {
@@ -63,18 +69,63 @@ class ProfilAtlit extends Component
     public function mount(Atlit $atlit)
     {
         $this->atlit = $atlit->load(['klub', 'cabangOlahraga', 'kategoriAtlit', 'user']);
-        
+
         // Inisialisasi data yang boleh diupdate
         $this->alamat = $this->atlit->alamat;
         $this->telepon = $this->atlit->telepon;
         $this->email = $this->atlit->email;
+
+        // Load prestasi dari relasi
+        $this->loadPrestasi();
+
+        // Hitung statistik prestasi
+        $this->calculateStatistikPrestasi();
+    }
+
+    public function loadPrestasi()
+    {
+        // Query langsung dari Prestasi model, bukan dari relasi
+        $query = Prestasi::where('atlit_id', $this->atlit->id)
+            ->with('cabangOlahraga')
+            ->latest();
+
+        // Filter berdasarkan status
+        if ($this->filterStatus !== 'all') {
+            $query->where('status', $this->filterStatus);
+        }
+
+        $this->prestasi = $query->get();
+    }
+
+    public function calculateStatistikPrestasi()
+    {
+        // Query langsung dari database menggunakan atlit_id
+        $allPrestasi = Prestasi::where('atlit_id', $this->atlit->id)->get();
+
+        $this->statistikPrestasi = [
+            'total' => $allPrestasi->count(),
+            'verified' => $allPrestasi->where('status', 'verified')->count(),
+            'pending' => $allPrestasi->where('status', 'pending')->count(),
+            'rejected' => $allPrestasi->where('status', 'rejected')->count(),
+            'emas' => $allPrestasi->where('medali', 'Emas')->count(),
+            'perak' => $allPrestasi->where('medali', 'Perak')->count(),
+            'perunggu' => $allPrestasi->where('medali', 'Perunggu')->count(),
+            'juara_1' => $allPrestasi->where('peringkat', '1')->count(),
+            'juara_2' => $allPrestasi->where('peringkat', '2')->count(),
+            'juara_3' => $allPrestasi->where('peringkat', '3')->count(),
+        ];
+    }
+    public function setFilterStatus($status)
+    {
+        $this->filterStatus = $status;
+        $this->loadPrestasi();
     }
 
     public function toggleEdit($field)
     {
         $property = 'editing' . ucfirst($field);
         $this->$property = !$this->$property;
-        
+
         // Reset data jika cancel edit
         if (!$this->$property) {
             if ($field === 'alamat') {
@@ -89,7 +140,7 @@ class ProfilAtlit extends Component
             }
             $this->resetErrorBag();
         }
-        
+
         // Show email warning saat mulai edit email
         if ($field === 'email' && $this->editingEmail) {
             $this->showEmailWarning = true;
@@ -104,17 +155,17 @@ class ProfilAtlit extends Component
         // Set validation rules berdasarkan field
         if ($field === 'alamat') {
             $rules['alamat'] = $this->rules()['alamat'];
-            $messages = array_filter($this->messages, function($key) {
+            $messages = array_filter($this->messages, function ($key) {
                 return str_starts_with($key, 'alamat.');
             }, ARRAY_FILTER_USE_KEY);
         } elseif ($field === 'telepon') {
             $rules['telepon'] = $this->rules()['telepon'];
-            $messages = array_filter($this->messages, function($key) {
+            $messages = array_filter($this->messages, function ($key) {
                 return str_starts_with($key, 'telepon.');
             }, ARRAY_FILTER_USE_KEY);
         } elseif ($field === 'email') {
             $rules['email'] = $this->rules()['email'];
-            $messages = array_filter($this->messages, function($key) {
+            $messages = array_filter($this->messages, function ($key) {
                 return str_starts_with($key, 'email.');
             }, ARRAY_FILTER_USE_KEY);
         }
@@ -144,7 +195,6 @@ class ProfilAtlit extends Component
             $this->$property = false;
 
             session()->flash('success', 'Data berhasil diperbarui.');
-
         } catch (\Exception $e) {
             session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -154,7 +204,7 @@ class ProfilAtlit extends Component
     {
         $this->validate([
             'fotoTemp' => $this->rules()['fotoTemp']
-        ], array_filter($this->messages, function($key) {
+        ], array_filter($this->messages, function ($key) {
             return str_starts_with($key, 'fotoTemp.');
         }, ARRAY_FILTER_USE_KEY));
 
@@ -181,7 +231,6 @@ class ProfilAtlit extends Component
             $this->editingFoto = false;
 
             session()->flash('success', 'Foto profil berhasil diperbarui.');
-
         } catch (\Exception $e) {
             session()->flash('error', 'Terjadi kesalahan saat mengupload foto: ' . $e->getMessage());
         }

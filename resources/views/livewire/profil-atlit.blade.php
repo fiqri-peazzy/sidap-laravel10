@@ -352,25 +352,184 @@
 
                         <!-- Prestasi Section -->
                         <hr class="my-4">
-                        <div class="row">
-                            <div class="col-12">
-                                <h6 class="text-info font-weight-bold mb-3">
-                                    <i class="fas fa-trophy mr-2"></i>Prestasi
+
+                        <!-- Daftar Prestasi Card -->
+                        <div class="card shadow mb-4 border-0">
+                            <div
+                                class="card-header bg-gradient-info text-white py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold">
+                                    <i class="fas fa-trophy mr-2"></i>Daftar Prestasi Saya
                                 </h6>
-                                <div class="p-3 bg-light rounded border-left-info">
-                                    @if ($atlit->prestasi)
-                                        <div class="prestasi-content">
-                                            {!! nl2br(e($atlit->prestasi)) !!}
-                                        </div>
-                                    @else
-                                        <span class="text-muted">
-                                            <i class="fas fa-info-circle mr-2"></i>
-                                            Prestasi belum diinputkan oleh admin
-                                        </span>
-                                    @endif
+                                <span class="badge badge-light badge-pill">{{ $prestasi->count() }} Prestasi</span>
+                            </div>
+                            <div class="card-body">
+                                <!-- Filter Status -->
+                                <div class="btn-group mb-3 btn-group-sm" role="group">
+                                    <button type="button"
+                                        class="btn {{ $filterStatus === 'all' ? 'btn-primary' : 'btn-outline-primary' }}"
+                                        wire:click="setFilterStatus('all')">
+                                        <i class="fas fa-list mr-1"></i> Semua ({{ $statistikPrestasi['total'] }})
+                                    </button>
+                                    <button type="button"
+                                        class="btn {{ $filterStatus === 'verified' ? 'btn-success' : 'btn-outline-success' }}"
+                                        wire:click="setFilterStatus('verified')">
+                                        <i class="fas fa-check mr-1"></i> Terverifikasi
+                                        ({{ $statistikPrestasi['verified'] }})
+                                    </button>
+                                    <button type="button"
+                                        class="btn {{ $filterStatus === 'pending' ? 'btn-warning' : 'btn-outline-warning' }}"
+                                        wire:click="setFilterStatus('pending')">
+                                        <i class="fas fa-clock mr-1"></i> Pending
+                                        ({{ $statistikPrestasi['pending'] }})
+                                    </button>
+                                    <button type="button"
+                                        class="btn {{ $filterStatus === 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}"
+                                        wire:click="setFilterStatus('rejected')">
+                                        <i class="fas fa-times mr-1"></i> Ditolak
+                                        ({{ $statistikPrestasi['rejected'] }})
+                                    </button>
                                 </div>
+
+                                <!-- Loading Indicator -->
+                                <div wire:loading wire:target="setFilterStatus" class="text-center py-3">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Daftar Prestasi -->
+                                <div wire:loading.remove wire:target="setFilterStatus">
+                                    @forelse($prestasi as $item)
+                                        <div class="card mb-3 border-0 shadow-sm hover-shadow">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="d-flex align-items-start">
+                                                            <div class="mr-3">
+                                                                @if ($item->peringkat == '1')
+                                                                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center"
+                                                                        style="width: 50px; height: 50px;">
+                                                                        <i class="fas fa-trophy fa-2x text-white"></i>
+                                                                    </div>
+                                                                @elseif($item->peringkat == '2')
+                                                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                                                        style="width: 50px; height: 50px;">
+                                                                        <i class="fas fa-medal fa-2x text-white"></i>
+                                                                    </div>
+                                                                @elseif($item->peringkat == '3')
+                                                                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center"
+                                                                        style="width: 50px; height: 50px;">
+                                                                        <i class="fas fa-medal fa-2x text-white"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center"
+                                                                        style="width: 50px; height: 50px;">
+                                                                        <i class="fas fa-award fa-2x text-white"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="font-weight-bold text-gray-800 mb-1">
+                                                                    {{ $item->nama_kejuaraan }}
+                                                                </h6>
+                                                                <div class="mb-2">
+                                                                    <span class="badge badge-primary badge-sm mr-1">
+                                                                        <i class="fas fa-layer-group"></i>
+                                                                        {{ $item->tingkat_kejuaraan }}
+                                                                    </span>
+                                                                    <span class="badge badge-info badge-sm mr-1">
+                                                                        <i class="fas fa-running"></i>
+                                                                        {{ $item->cabangOlahraga->nama_cabang ?? '-' }}
+                                                                    </span>
+                                                                    @if ($item->medali)
+                                                                        {!! $item->medali_badge !!}
+                                                                    @endif
+                                                                </div>
+                                                                <p class="text-muted small mb-2">
+                                                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                                                    {{ $item->tempat_kejuaraan }}
+                                                                </p>
+                                                                <p class="text-muted small mb-0">
+                                                                    <i class="fas fa-calendar mr-1"></i>
+                                                                    {{ $item->tanggal_kejuaraan }}
+                                                                </p>
+                                                                @if ($item->nomor_pertandingan)
+                                                                    <p class="text-muted small mb-0">
+                                                                        <i class="fas fa-list-ol mr-1"></i> Nomor:
+                                                                        {{ $item->nomor_pertandingan }}
+                                                                    </p>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 text-right">
+                                                        <div class="mb-2">
+                                                            {!! $item->peringkat_badge !!}
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            {!! $item->status_badge !!}
+                                                        </div>
+                                                        @if ($item->sertifikat)
+                                                            <a href="{{ $item->sertifikat_url }}" target="_blank"
+                                                                class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-file-pdf mr-1"></i> Lihat Sertifikat
+                                                            </a>
+                                                        @endif
+                                                        @if ($item->status === 'rejected' && $item->keterangan)
+                                                            <div class="alert alert-danger alert-sm mt-2 p-2">
+                                                                <small><strong>Alasan
+                                                                        Penolakan:</strong><br>{{ $item->keterangan }}</small>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-trophy fa-4x text-gray-300 mb-3"></i>
+                                            <h5 class="text-gray-500">
+                                                @if ($filterStatus === 'all')
+                                                    Belum Ada Prestasi
+                                                @else
+                                                    Tidak Ada Prestasi dengan Status {{ ucfirst($filterStatus) }}
+                                                @endif
+                                            </h5>
+                                            <p class="text-muted">
+                                                Prestasi Anda akan muncul di sini setelah diinputkan dan diverifikasi
+                                                oleh admin.
+                                            </p>
+                                        </div>
+                                    @endforelse
+                                </div>
+
+                                @if ($prestasi->count() > 0)
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Menampilkan {{ $prestasi->count() }} prestasi
+                                        </small>
+                                    </div>
+                                @endif
                             </div>
                         </div>
+
+                        @push('styles')
+                            <style>
+                                .hover-shadow {
+                                    transition: all 0.3s ease;
+                                }
+
+                                .hover-shadow:hover {
+                                    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+                                    transform: translateY(-2px);
+                                }
+
+                                .bg-gradient-warning {
+                                    background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
+                                }
+                            </style>
+                        @endpush
                     </div>
                 </div>
             </div>

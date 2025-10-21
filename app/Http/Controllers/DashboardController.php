@@ -411,4 +411,146 @@ class DashboardController extends Controller
         // Method untuk export data yang akan kita buat nanti
         // Menunggu arahan Anda apakah menggunakan Laravel Excel atau cara lain
     }
+
+
+    /**
+     * Dashboard untuk Verifikator dengan data lengkap
+     */
+    public function verifikatorDashboard()
+    {
+        $verifikatorId = Auth::id();
+
+        // Statistik Atlit
+        $atlitStats = [
+            'pending' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_PENDING)->count(),
+            'verified' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_VERIFIED)->count(),
+            'rejected' => Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_REJECTED)->count(),
+            'total' => Atlit::count(),
+        ];
+
+        // Statistik Prestasi
+        $prestasiStats = [
+            'pending' => Prestasi::where('status', 'pending')->count(),
+            'verified' => Prestasi::where('status', 'verified')->count(),
+            'rejected' => Prestasi::where('status', 'rejected')->count(),
+            'total' => Prestasi::count(),
+        ];
+
+        // Atlit Pending Verifikasi (10 terbaru)
+        $atlitPending = Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_PENDING)
+            ->with(['cabangOlahraga:id,nama_cabang', 'klub:id,nama_klub'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Prestasi Pending Verifikasi (10 terbaru)
+        $prestasiPending = Prestasi::where('status', 'pending')
+            ->with(['atlit:id,nama_lengkap', 'cabangOlahraga:id,nama_cabang'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Aktivitas Verifikasi Hari Ini (yang dilakukan oleh verifikator ini)
+        $aktivitasHariIni = [
+            'atlit_verified' => Atlit::where('verified_by', $verifikatorId)
+                ->whereDate('verified_at', Carbon::today())
+                ->count(),
+            'atlit_rejected' => Atlit::where('verified_by', $verifikatorId)
+                ->where('status_verifikasi', Atlit::STATUS_VERIFIKASI_REJECTED)
+                ->whereDate('verified_at', Carbon::today())
+                ->count(),
+        ];
+
+        // History Verifikasi Terbaru (10 terakhir yang dilakukan verifikator ini)
+        $historyVerifikasi = Atlit::where('verified_by', $verifikatorId)
+            ->whereNotNull('verified_at')
+            ->with(['cabangOlahraga:id,nama_cabang', 'klub:id,nama_klub'])
+            ->latest('verified_at')
+            ->take(10)
+            ->get();
+
+        // Chart - Verifikasi per Minggu (4 minggu terakhir)
+        $chartVerifikasi = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $startWeek = Carbon::now()->subWeeks($i)->startOfWeek();
+            $endWeek = Carbon::now()->subWeeks($i)->endOfWeek();
+
+            $verified = Atlit::where('verified_by', $verifikatorId)
+                ->where('status_verifikasi', Atlit::STATUS_VERIFIKASI_VERIFIED)
+                ->whereBetween('verified_at', [$startWeek, $endWeek])
+                ->count();
+
+            $rejected = Atlit::where('verified_by', $verifikatorId)
+                ->where('status_verifikasi', Atlit::STATUS_VERIFIKASI_REJECTED)
+                ->whereBetween('verified_at', [$startWeek, $endWeek])
+                ->count();
+
+            $chartVerifikasi[] = [
+                'minggu' => $startWeek->format('d M') . ' - ' . $endWeek->format('d M'),
+                'verified' => $verified,
+                'rejected' => $rejected,
+            ];
+        }
+
+        // Chart - Distribusi Status Atlit
+        $chartStatusAtlit = [
+            ['status' => 'Pending', 'total' => $atlitStats['pending']],
+            ['status' => 'Terverifikasi', 'total' => $atlitStats['verified']],
+            ['status' => 'Ditolak', 'total' => $atlitStats['rejected']],
+        ];
+
+        // Chart - Distribusi Status Prestasi
+        $chartStatusPrestasi = [
+            ['status' => 'Pending', 'total' => $prestasiStats['pending']],
+            ['status' => 'Terverifikasi', 'total' => $prestasiStats['verified']],
+            ['status' => 'Ditolak', 'total' => $prestasiStats['rejected']],
+        ];
+
+        // Total Verifikasi oleh Verifikator Ini
+        $totalVerifikasiSaya = Atlit::where('verified_by', $verifikatorId)
+            ->whereNotNull('verified_at')
+            ->count();
+
+        // Statistik Performa Verifikator
+        $performaStats = [
+            'hari_ini' => $aktivitasHariIni['atlit_verified'] + $aktivitasHariIni['atlit_rejected'],
+            'minggu_ini' => Atlit::where('verified_by', $verifikatorId)
+                ->whereBetween('verified_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                ->count(),
+            'bulan_ini' => Atlit::where('verified_by', $verifikatorId)
+                ->whereMonth('verified_at', Carbon::now()->month)
+                ->whereYear('verified_at', Carbon::now()->year)
+                ->count(),
+            'total' => $totalVerifikasiSaya,
+        ];
+
+        // Cabang Olahraga dengan Atlit Pending Terbanyak
+        $caborPendingTerbanyak = Atlit::where('status_verifikasi', Atlit::STATUS_VERIFIKASI_PENDING)
+            ->select('cabang_olahraga_id', DB::raw('COUNT(*) as total'))
+            ->with('cabangOlahraga:id,nama_cabang')
+            ->groupBy('cabang_olahraga_id')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'nama' => $item->cabangOlahraga->nama_cabang ?? 'Tidak ada',
+                    'total' => $item->total
+                ];
+            });
+
+        return view('verifikator.dashboard', compact(
+            'atlitStats',
+            'prestasiStats',
+            'atlitPending',
+            'prestasiPending',
+            'aktivitasHariIni',
+            'historyVerifikasi',
+            'chartVerifikasi',
+            'chartStatusAtlit',
+            'chartStatusPrestasi',
+            'performaStats',
+            'caborPendingTerbanyak'
+        ));
+    }
 }
