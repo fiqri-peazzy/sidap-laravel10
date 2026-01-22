@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\JadwalEvent;
+use App\Models\KategoriAtlit;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,7 +17,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            // Tambahkan seeder lain yang diperlukan di sini
+            UserVerifikatorSeeder::class,
+            CaborSeeder::class,
+            KategoriAtlitSeeder::class,
+            KlubSeeder::class,
+            PelatihSeeder::class,
+            AtlitSeeder::class,
+            JadwalEventSeeder::class,
+            JadwalLatihanSeeder::class,
+            PrestasiSeeder::class,
+
         ]);
     }
 }
