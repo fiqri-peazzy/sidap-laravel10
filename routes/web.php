@@ -19,9 +19,8 @@ use App\Http\Livewire\LaporanPrestasi;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
-
 // Redirect after login based on role
 Route::middleware([
     'auth:sanctum',
