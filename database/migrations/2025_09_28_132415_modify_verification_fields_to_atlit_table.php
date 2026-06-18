@@ -20,9 +20,7 @@ return new class extends Migration
             }
             // verified_by, verified_at, alasan_ditolak sudah ada di migrasi sebelumnya
 
-            if (!Schema::hasColumn('atlit', 'status') || Schema::getColumnType('atlit', 'status') !== 'string') {
-                $table->string('status')->default('nonaktif')->change();
-            }
+            $table->string('status')->default('nonaktif')->change();
         });
 
         // Update status default jika belum ada

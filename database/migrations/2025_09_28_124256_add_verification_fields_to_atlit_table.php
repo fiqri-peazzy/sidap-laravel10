@@ -26,10 +26,8 @@ return new class extends Migration
                 $table->text('alasan_ditolak')->nullable()->after('verified_at');
             }
 
-            // Update status default jika belum ada
-            if (!Schema::hasColumn('atlit', 'status') || Schema::getColumnType('atlit', 'status') !== 'string') {
-                $table->string('status')->default('pending')->change();
-            }
+            // Pastikan status tetap bisa digunakan sebagai string untuk flow verifikasi
+            $table->string('status')->default('pending')->change();
         });
     }
 
