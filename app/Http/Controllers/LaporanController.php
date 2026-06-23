@@ -226,7 +226,7 @@ class LaporanController extends Controller
     public function cetakAtlit(Request $request)
     {
         $query = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit']);
-        // Filter berdasarkan parameter
+
         if ($request->klub_id) {
             $query->where('klub_id', $request->klub_id);
         }
@@ -239,13 +239,18 @@ class LaporanController extends Controller
         if ($request->status) {
             $query->where('status', $request->status);
         }
+
         $atlit = $query->orderBy('nama_lengkap')->get();
+
         $data = [
-            'title' => 'Laporan Data Atlit PPLP Provinsi Gorontalo',
-            'atlit' => $atlit,
-            'filter' => $request->all(),
-            'tanggal_cetak' => Carbon::now()->format('d F Y H:i:s')
+            'title'         => 'Laporan Data Atlit PPLP Provinsi Gorontalo',
+            'atlit'         => $atlit,
+            'filter'        => $request->all(),
+            'tanggal_cetak' => Carbon::now()->format('d F Y'),
+            'waktu_cetak'   => Carbon::now()->format('H:i:s'),        // ← tambah ini
+            'user_cetak'    => auth()->user()->name ?? 'Sistem',      // ← tambah ini
         ];
+
         $pdf = Pdf::loadView('admin.laporan.atlit-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         return $pdf->download('laporan-atlit-' . date('Y-m-d') . '.pdf');
@@ -253,7 +258,7 @@ class LaporanController extends Controller
     public function cetakPrestasi(Request $request)
     {
         $query = Prestasi::with(['atlit', 'cabangOlahraga']);
-        // Filter berdasarkan parameter
+
         if ($request->atlit_id) {
             $query->where('atlit_id', $request->atlit_id);
         }
@@ -269,13 +274,18 @@ class LaporanController extends Controller
         if ($request->medali) {
             $query->where('medali', $request->medali);
         }
+
         $prestasi = $query->orderBy('tahun', 'desc')->orderBy('tanggal_mulai', 'desc')->get();
+
         $data = [
-            'title' => 'Laporan Prestasi Atlit PPLP Provinsi Gorontalo',
-            'prestasi' => $prestasi,
-            'filter' => $request->all(),
-            'tanggal_cetak' => Carbon::now()->format('d F Y H:i:s')
+            'title'         => 'Laporan Prestasi Atlit PPLP Provinsi Gorontalo',
+            'prestasi'      => $prestasi,
+            'filter'        => $request->all(),
+            'tanggal_cetak' => Carbon::now()->format('d F Y'),   // ← pisah tanggal
+            'waktu_cetak'   => Carbon::now()->format('H:i:s'),   // ← tambah waktu
+            'user_cetak'    => auth()->user()->name ?? 'Sistem', // ← tambah user
         ];
+
         $pdf = Pdf::loadView('admin.laporan.prestasi-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         return $pdf->download('laporan-prestasi-' . date('Y-m-d') . '.pdf');

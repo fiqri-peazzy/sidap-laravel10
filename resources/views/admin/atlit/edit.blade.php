@@ -213,14 +213,14 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label for="prestasi">Prestasi</label>
                                         <textarea class="form-control @error('prestasi') is-invalid @enderror" id="prestasi" name="prestasi"
                                             rows="4">{{ old('prestasi', $atlit->prestasi) }}</textarea>
                                         @error('prestasi')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
-                                    </div>
+                                    </div> -->
 
                                     <div class="form-group">
                                         <label for="status">Status <span class="text-danger">*</span></label>

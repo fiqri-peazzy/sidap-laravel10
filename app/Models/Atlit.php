@@ -90,8 +90,8 @@ class Atlit extends Model
     // ============================================
 
     public const STATUS_VERIFIKASI_PENDING = 'pending';
-    public const STATUS_VERIFIKASI_VERIFIED = 'diverifikasi';
-    public const STATUS_VERIFIKASI_REJECTED = 'ditolak';
+    public const STATUS_VERIFIKASI_VERIFIED = 'verified';
+    public const STATUS_VERIFIKASI_REJECTED = 'rejected';
 
     public const STATUS_VERIFIKASI_OPTIONS = [
         self::STATUS_VERIFIKASI_PENDING => 'Menunggu Verifikasi',

@@ -14,6 +14,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin PPLP',
             'email' => 'admin@pplp.test',
             'password' => Hash::make('admin123'),
+            'role' => 'admin',
         ]);
     }
 }
