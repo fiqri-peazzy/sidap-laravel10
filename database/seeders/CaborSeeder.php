@@ -45,6 +45,21 @@ class CaborSeeder extends Seeder
                 'status' => 'aktif'
             ],
             [
+                'nama_cabang' => 'Sepak Takraw',
+                'deskripsi' => 'Olahraga perpaduan sepak bola dan voli.',
+                'status' => 'aktif'
+            ],
+            [
+                'nama_cabang' => 'Pencak Silat',
+                'deskripsi' => 'Seni bela diri tradisional Indonesia.',
+                'status' => 'aktif'
+            ],
+            [
+                'nama_cabang' => 'Anggar',
+                'deskripsi' => 'Olahraga ketangkasan menggunakan senjata.',
+                'status' => 'aktif'
+            ],
+            [
                 'nama_cabang' => 'Tenis Meja',
                 'deskripsi' => 'Olahraga yang menggunakan raket untuk memukul bola celluloid melewati net di atas meja.',
                 'status' => 'aktif'

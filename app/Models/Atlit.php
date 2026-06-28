@@ -65,6 +65,11 @@ class Atlit extends Model
         return $this->belongsTo(KategoriAtlit::class, 'kategori_atlit_id');
     }
 
+    public function riwayat()
+    {
+        return $this->hasMany(AtlitRiwayat::class, 'atlit_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

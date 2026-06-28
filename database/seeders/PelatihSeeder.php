@@ -29,88 +29,40 @@ class PelatihSeeder extends Seeder
         $statusOptions = ['aktif', 'nonaktif', 'cuti'];
         $jenisKelaminOptions = ['L', 'P'];
 
-        // Data pelatih dummy
-        $pelatihData = [
-            [
-                'nama' => 'Ahmad Fauzi, S.Pd',
-                'email' => 'ahmad.fauzi@pplpgorontalo.com',
-                'telepon' => '081234567890',
-                'alamat' => 'Jl. Sudirman No. 123, Kota Gorontalo',
-                'tanggal_lahir' => '1985-03-15',
-                'jenis_kelamin' => 'L',
-                'lisensi' => 'LISENSI-001-2023',
-                'pengalaman_tahun' => 12,
-                'status' => 'aktif'
-            ],
-            [
-                'nama' => 'Siti Nurhaliza, M.Pd',
-                'email' => 'siti.nurhaliza@pplpgorontalo.com',
-                'telepon' => '081234567891',
-                'alamat' => 'Jl. Ahmad Yani No. 456, Kota Gorontalo',
-                'tanggal_lahir' => '1988-07-22',
-                'jenis_kelamin' => 'P',
-                'lisensi' => 'LISENSI-002-2023',
-                'pengalaman_tahun' => 8,
-                'status' => 'aktif'
-            ],
-            [
-                'nama' => 'Muhammad Ridwan',
-                'email' => 'muhammad.ridwan@pplpgorontalo.com',
-                'telepon' => '081234567892',
-                'alamat' => 'Jl. Diponegoro No. 789, Kota Gorontalo',
-                'tanggal_lahir' => '1982-11-08',
-                'jenis_kelamin' => 'L',
-                'lisensi' => 'LISENSI-003-2023',
-                'pengalaman_tahun' => 15,
-                'status' => 'aktif'
-            ],
-            [
-                'nama' => 'Dewi Kartika, S.Or',
-                'email' => 'dewi.kartika@pplpgorontalo.com',
-                'telepon' => '081234567893',
-                'alamat' => 'Jl. Gajah Mada No. 321, Kota Gorontalo',
-                'tanggal_lahir' => '1990-05-30',
-                'jenis_kelamin' => 'P',
-                'lisensi' => 'LISENSI-004-2023',
-                'pengalaman_tahun' => 6,
-                'status' => 'aktif'
-            ],
-            [
-                'nama' => 'Bambang Susilo',
-                'email' => 'bambang.susilo@pplpgorontalo.com',
-                'telepon' => '081234567894',
-                'alamat' => 'Jl. Veteran No. 654, Kota Gorontalo',
-                'tanggal_lahir' => '1979-12-14',
-                'jenis_kelamin' => 'L',
-                'lisensi' => null,
-                'pengalaman_tahun' => 18,
-                'status' => 'cuti'
-            ]
-        ];
+        $pelatihJson = file_get_contents(database_path('seeders/pelatih_data.json'));
+        $pelatihDataList = json_decode($pelatihJson, true);
 
-        foreach ($pelatihData as $data) {
-            $data['klub_id'] = $klubs->random()->id;
-            $data['cabang_olahraga_id'] = $cabangOlahragas->random()->id;
-
-            Pelatih::create($data);
+        if (!$pelatihDataList) {
+            $this->command->error('File pelatih_data.json tidak ditemukan atau kosong.');
+            return;
         }
 
-        for ($i = 0; $i < 15; $i++) {
+        foreach ($pelatihDataList as $data) {
+            if ($data['nama'] === 'JUMLAH') continue;
+
+            $cabor = null;
+            if ($data['cabor']) {
+                $cabor = Cabor::where('nama_cabang', $data['cabor'])->first();
+            }
+            $caborId = $cabor ? $cabor->id : $cabangOlahragas->random()->id;
+            
+            $klubId = $klubs->random()->id;
+
             Pelatih::create([
-                'nama' => $faker->name,
+                'nama' => $data['nama'],
                 'email' => $faker->unique()->safeEmail,
                 'telepon' => $faker->phoneNumber,
-                'alamat' => $faker->address,
+                'alamat' => $data['alamat'] ?? $faker->address,
                 'tanggal_lahir' => $faker->dateTimeBetween('-50 years', '-25 years')->format('Y-m-d'),
-                'jenis_kelamin' => $faker->randomElement($jenisKelaminOptions),
-                'klub_id' => $klubs->random()->id,
-                'cabang_olahraga_id' => $cabangOlahragas->random()->id,
-                'lisensi' => $faker->boolean(70) ? 'LISENSI-' . str_pad($i + 6, 3, '0', STR_PAD_LEFT) . '-2023' : null,
+                'jenis_kelamin' => $data['jk'] ?? $faker->randomElement($jenisKelaminOptions),
+                'klub_id' => $klubId,
+                'cabang_olahraga_id' => $caborId,
+                'lisensi' => $faker->boolean(70) ? 'LISENSI-' . $faker->numerify('###') . '-2023' : null,
                 'pengalaman_tahun' => $faker->numberBetween(1, 25),
-                'status' => $faker->randomElement($statusOptions),
+                'status' => 'aktif',
             ]);
         }
 
-        $this->command->info('Pelatih seeder completed successfully!');
+        $this->command->info('Pelatih seeder completed successfully with real names!');
     }
 }

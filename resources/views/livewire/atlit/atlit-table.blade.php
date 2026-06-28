@@ -18,9 +18,17 @@
 
     <!-- Filter Section -->
     <div class="row mb-3">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input wire:model.live.debounce.300ms="search" type="text" class="form-control"
                 placeholder="Cari atlit...">
+        </div>
+        <div class="col-md-2">
+            <select wire:model.live="filterTahun" class="form-control">
+                <option value="">Semua Tahun</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+            </select>
         </div>
         <div class="col-md-2">
             <select wire:model.live="filterKlub" class="form-control">
@@ -46,16 +54,16 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2">
-            <select wire:model.live="filterStatus" class="form-control">
-                <option value="">Semua Status</option>
+        <div class="col-md-1">
+            <select wire:model.live="filterStatus" class="form-control" title="Status">
+                <option value="">Status</option>
                 <option value="aktif">Aktif</option>
                 <option value="nonaktif">Nonaktif</option>
                 <option value="pensiun">Pensiun</option>
             </select>
         </div>
         <div class="col-md-1">
-            <button wire:click="resetFilters" class="btn btn-outline-secondary" title="Reset Filter">
+            <button wire:click="resetFilters" class="btn btn-outline-secondary w-100" title="Reset Filter">
                 <i class="fas fa-undo"></i>
             </button>
         </div>
@@ -69,14 +77,15 @@
                     <th width="5%">No</th>
                     <th width="10%">Foto</th>
                     <th width="15%">Nama Lengkap</th>
+                    <th width="6%">Tahun</th>
                     <th width="10%">NIK</th>
-                    <th width="8%">JK</th>
-                    <th width="8%">Umur</th>
-                    <th width="12%">Klub</th>
-                    <th width="12%">Cabor</th>
+                    <th width="5%">JK</th>
+                    <th width="5%">Umur</th>
+                    <th width="10%">Klub</th>
+                    <th width="10%">Cabor</th>
                     <th width="10%">Kategori</th>
-                    <th width="8%">Status</th>
-                    <th width="12%">Aksi</th>
+                    <th width="7%">Status</th>
+                    <th width="7%">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,6 +109,7 @@
                                 <br><small class="text-muted">{{ $item->email }}</small>
                             @endif
                         </td>
+                        <td>{{ $item->riwayat->pluck('tahun')->sort()->implode(', ') }}</td>
                         <td>{{ $item->nik }}</td>
                         <td>
                             <span class="badge badge-{{ $item->jenis_kelamin == 'L' ? 'primary' : 'warning' }}">

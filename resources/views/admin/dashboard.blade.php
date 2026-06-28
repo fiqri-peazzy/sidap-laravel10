@@ -189,7 +189,7 @@
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Pertumbuhan Atlit (6 Bulan Terakhir)</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Pertumbuhan Atlit (5 Tahun Terakhir)</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
@@ -523,7 +523,7 @@
         new Chart(ctxAtlit, {
             type: 'line',
             data: {
-                labels: dataAtlit.map(item => item.bulan),
+                labels: dataAtlit.map(item => item.label),
                 datasets: [{
                     label: 'Jumlah Atlit',
                     data: dataAtlit.map(item => item.total),

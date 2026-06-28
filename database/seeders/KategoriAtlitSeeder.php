@@ -27,16 +27,42 @@ class KategoriAtlitSeeder extends Seeder
             'Atletik' => ['Lari Jarak Pendek', 'Lari Jarak Menengah', 'Lari Jarak Jauh', 'Lompat Jauh', 'Lompat Tinggi', 'Lempar Lembing', 'Tolak Peluru'],
         ];
 
+        // Baca dari JSON hasil ekstrak
+        $atletJson = file_get_contents(database_path('seeders/atlet_data.json'));
+        $atletDataList = json_decode($atletJson, true);
+
+        if ($atletDataList) {
+            foreach ($atletDataList as $data) {
+                if (empty($data['cabor']) || empty($data['nomor_spesialis']) || $data['nama'] === 'JUMLAH') {
+                    continue;
+                }
+                $caborName = trim($data['cabor']);
+                $kategoriName = trim($data['nomor_spesialis']);
+                
+                if (!isset($kategoriData[$caborName])) {
+                    $kategoriData[$caborName] = [];
+                }
+                
+                if (!in_array($kategoriName, $kategoriData[$caborName])) {
+                    $kategoriData[$caborName][] = $kategoriName;
+                }
+            }
+        }
+
         foreach ($cabors as $cabor) {
             $namaKategori = $kategoriData[$cabor->nama_cabang] ?? ['Umum', 'Prestasi'];
 
             foreach ($namaKategori as $kategori) {
-                KategoriAtlit::create([
-                    'cabang_olahraga_id' => $cabor->id,
-                    'nama_kategori' => $kategori,
-                    'deskripsi' => "Kategori $kategori untuk cabang olahraga {$cabor->nama_cabang}",
-                    'status' => 'aktif',
-                ]);
+                KategoriAtlit::firstOrCreate(
+                    [
+                        'cabang_olahraga_id' => $cabor->id,
+                        'nama_kategori' => $kategori
+                    ],
+                    [
+                        'deskripsi' => "Kategori $kategori untuk cabang olahraga {$cabor->nama_cabang}",
+                        'status' => 'aktif',
+                    ]
+                );
             }
         }
     }

@@ -46,6 +46,28 @@ class AtlitController extends Controller
 
         $atlit = Atlit::create($data);
 
+        if ($request->has('riwayat')) {
+            foreach ($request->riwayat as $r) {
+                if (!empty($r['tahun']) && !empty($r['klub_id']) && !empty($r['cabang_olahraga_id'])) {
+                    $atlit->riwayat()->create([
+                        'tahun' => $r['tahun'],
+                        'klub_id' => $r['klub_id'],
+                        'cabang_olahraga_id' => $r['cabang_olahraga_id'],
+                        'kategori_atlit_id' => $r['kategori_atlit_id'],
+                        'status' => $r['status'] ?? 'aktif',
+                    ]);
+                }
+            }
+        } else {
+             $atlit->riwayat()->create([
+                 'tahun' => date('Y'),
+                 'klub_id' => $atlit->klub_id,
+                 'cabang_olahraga_id' => $atlit->cabang_olahraga_id,
+                 'kategori_atlit_id' => $atlit->kategori_atlit_id,
+                 'status' => $atlit->status,
+             ]);
+        }
+
         if ($atlit->email) {
             $atlit->createUser();
         }
@@ -90,6 +112,23 @@ class AtlitController extends Controller
         }
 
         $atlit->update($data);
+
+        // Update Riwayat
+        if ($request->has('riwayat')) {
+            // Delete existing riwayat to replace with new array
+            $atlit->riwayat()->delete();
+            foreach ($request->riwayat as $r) {
+                if (!empty($r['tahun']) && !empty($r['klub_id']) && !empty($r['cabang_olahraga_id'])) {
+                    $atlit->riwayat()->create([
+                        'tahun' => $r['tahun'],
+                        'klub_id' => $r['klub_id'],
+                        'cabang_olahraga_id' => $r['cabang_olahraga_id'],
+                        'kategori_atlit_id' => $r['kategori_atlit_id'],
+                        'status' => $r['status'] ?? 'aktif',
+                    ]);
+                }
+            }
+        }
 
         // Buat atau update user jika email berubah
         if ($atlit->email && !$atlit->user_id) {

@@ -188,6 +188,22 @@
                                         @enderror
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="tahun_saat_ini">Tahun Data Utama (Terkini) <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" name="riwayat[0][tahun]" value="{{ old('riwayat.0.tahun', date('Y')) }}" required>
+                                        <input type="hidden" name="riwayat[0][klub_id]" id="hidden_klub_id">
+                                        <input type="hidden" name="riwayat[0][cabang_olahraga_id]" id="hidden_cabor_id">
+                                        <input type="hidden" name="riwayat[0][kategori_atlit_id]" id="hidden_kategori_id">
+                                        <small class="text-muted">Tahun untuk status Klub, Cabor, & Kategori yang Anda pilih di atas.</small>
+                                    </div>
+
+                                    <hr>
+                                    <h6 class="font-weight-bold">Riwayat Pembinaan Tahun Lain (Opsional)</h6>
+                                    <div id="riwayat-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mb-3" id="btn-add-riwayat">
+                                        <i class="fas fa-plus"></i> Tambah Riwayat Tahun Sebelumnya
+                                    </button>
+
                                     <!-- <div class="form-group">
                                         <label for="prestasi">Prestasi</label>
                                         <textarea class="form-control @error('prestasi') is-invalid @enderror" id="prestasi" name="prestasi"
@@ -231,39 +247,116 @@
         </div>
     </div>
 
+    <!-- Template Riwayat -->
+    <template id="riwayat-template">
+        <div class="card mb-3 riwayat-row border-left-info shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Tahun</label>
+                        <input type="number" name="riwayat[{INDEX}][tahun]" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Klub</label>
+                        <select name="riwayat[{INDEX}][klub_id]" class="form-control form-control-sm" required>
+                            <option value="">Pilih Klub</option>
+                            @foreach($klub as $k)
+                                <option value="{{ $k->id }}">{{ $k->nama_klub }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Cabang</label>
+                        <select name="riwayat[{INDEX}][cabang_olahraga_id]" class="form-control form-control-sm cabor-riwayat" data-index="{INDEX}" required>
+                            <option value="">Pilih Cabor</option>
+                            @foreach($cabangOlahraga as $c)
+                                <option value="{{ $c->id }}">{{ $c->nama_cabang }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Kategori</label>
+                        <select name="riwayat[{INDEX}][kategori_atlit_id]" class="form-control form-control-sm kategori-riwayat" id="kategori_riwayat_{INDEX}" required>
+                            <option value="">Pilih Cabor dulu</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-sm btn-danger btn-block btn-remove-riwayat" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
     @push('scripts')
         <script>
             $(document).ready(function() {
+                // Sinkronkan nilai main select ke hidden inputs riwayat[0]
+                function syncMainData() {
+                    $('#hidden_klub_id').val($('#klub_id').val());
+                    $('#hidden_cabor_id').val($('#cabang_olahraga_id').val());
+                    $('#hidden_kategori_id').val($('#kategori_atlit_id').val());
+                }
+                $('#klub_id, #cabang_olahraga_id, #kategori_atlit_id').change(syncMainData);
+
                 $('#cabang_olahraga_id').change(function() {
                     var cabangOlahragaId = $(this).val();
                     var kategoriSelect = $('#kategori_atlit_id');
-                    console.log('test');
                     kategoriSelect.html('<option value="">Loading...</option>').prop('disabled', true);
 
                     if (cabangOlahragaId) {
                         $.get('/api/kategori-atlit/' + cabangOlahragaId, function(data) {
                             kategoriSelect.html('<option value="">Pilih Kategori</option>');
-
                             $.each(data, function(index, kategori) {
                                 kategoriSelect.append('<option value="' + kategori.id + '">' +
                                     kategori.nama_kategori + '</option>');
                             });
-
                             kategoriSelect.prop('disabled', false);
-
                             @if (old('kategori_atlit_id'))
                                 kategoriSelect.val('{{ old('kategori_atlit_id') }}');
                             @endif
+                            syncMainData();
                         });
                     } else {
                         kategoriSelect.html('<option value="">Pilih cabang olahraga terlebih dahulu</option>');
+                        syncMainData();
                     }
                 });
 
-                // Trigger change jika ada old value
                 @if (old('cabang_olahraga_id'))
                     $('#cabang_olahraga_id').trigger('change');
                 @endif
+
+                // Repeater Logic
+                let riwayatIndex = 1; // 0 dipakai untuk data utama
+                $('#btn-add-riwayat').click(function() {
+                    let template = $('#riwayat-template').html();
+                    template = template.replace(/{INDEX}/g, riwayatIndex);
+                    $('#riwayat-container').append(template);
+                    riwayatIndex++;
+                });
+
+                $(document).on('click', '.btn-remove-riwayat', function() {
+                    $(this).closest('.riwayat-row').remove();
+                });
+
+                $(document).on('change', '.cabor-riwayat', function() {
+                    let caborId = $(this).val();
+                    let index = $(this).data('index');
+                    let kategoriSelect = $('#kategori_riwayat_' + index);
+                    
+                    kategoriSelect.html('<option value="">Loading...</option>');
+                    if (caborId) {
+                        $.get('/api/kategori-atlit/' + caborId, function(data) {
+                            kategoriSelect.html('<option value="">Pilih Kategori</option>');
+                            $.each(data, function(i, k) {
+                                kategoriSelect.append('<option value="'+k.id+'">'+k.nama_kategori+'</option>');
+                            });
+                        });
+                    } else {
+                        kategoriSelect.html('<option value="">Pilih Cabor dulu</option>');
+                    }
+                });
             });
         </script>
     @endpush

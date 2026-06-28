@@ -1,0 +1,82 @@
+[
+  {
+    "nama": "Abdul Halim S Radju",
+    "nik": "7501010903910001",
+    "alamat": "Desa Mootilango \nKec. Tilongkabila \nKab. Bone Bolango",
+    "jk": "L",
+    "cabor": "Sepak Takraw",
+    "nomor_spesialis": "TEAM & DOUBLE"
+  },
+  {
+    "nama": "Saptahidayat Dama",
+    "nik": "7571060709700001",
+    "alamat": "Jl. Pinang Timur Blok C1-11\nKel .Pulubala Kec. Kota Tengah\nKota Gorontalo",
+    "jk": "L",
+    "cabor": "Karate",
+    "nomor_spesialis": "KATA DAN KUMITE"
+  },
+  {
+    "nama": "Deddy Punu",
+    "nik": null,
+    "alamat": "Jl. Taman Hiburan. Wongkaditi Barat, Kota Utara, Gorontalo.",
+    "jk": "L",
+    "cabor": "Pencak Silat",
+    "nomor_spesialis": "TANDING DAN SENI"
+  },
+  {
+    "nama": "Rochmad Cahyuji Gani, S.Pd",
+    "nik": "7571031803860002",
+    "alamat": "Jl. Padang, Kel. Tapa, Kec. Kota Utara, Kota Gorontalo",
+    "jk": "L",
+    "cabor": null,
+    "nomor_spesialis": "TANDING DAN SENI"
+  },
+  {
+    "nama": "Jailan Saleh Ahmad",
+    "nik": "7501030510730002",
+    "alamat": "Dudun Buoyo, Kel. Limehe Timur\nKec. Tabongo, Kab. Gorontalo",
+    "jk": "L",
+    "cabor": "Atletik",
+    "nomor_spesialis": "NOMOR TRACK"
+  },
+  {
+    "nama": "Januar B. Lahay, S.AP",
+    "nik": null,
+    "alamat": "Jl. Mangga II Huangobotu, Dungigi. Kota Gorontalo",
+    "jk": "L",
+    "cabor": "Taekwondo",
+    "nomor_spesialis": "KYORUGI"
+  },
+  {
+    "nama": "Siti Rahmah Panani",
+    "nik": "7504044212960002",
+    "alamat": "Dusun Milalude, Kel. Buntulia Utara, Kec. Buntulia",
+    "jk": "P",
+    "cabor": null,
+    "nomor_spesialis": "KYORUGI"
+  },
+  {
+    "nama": "Bony Farayitodi Gozal",
+    "nik": "7571041305840002",
+    "alamat": "Jl. Prof DR. H. Hasan Abas Nusi\nKel. Tuladenggi Kec. Dungingi Kota Gorontalo",
+    "jk": "L",
+    "cabor": null,
+    "nomor_spesialis": "KYORUGI"
+  },
+  {
+    "nama": "Mohamad Kalaka",
+    "nik": "7501021409700003",
+    "alamat": "Dusun IV, Desa Hulawa,\nKec. Telaga Kab. Gorontalo",
+    "jk": "L",
+    "cabor": "Tenis Meja",
+    "nomor_spesialis": "TUNGGAL & GANDA"
+  },
+  {
+    "nama": "Aldry Mundung",
+    "nik": "7571061804690002",
+    "alamat": "Kel. Wumialo, Kec. Kota Tengah\nKota Gorontalo",
+    "jk": "L",
+    "cabor": "Anggar",
+    "nomor_spesialis": "FORET BEREGU"
+  }
+]

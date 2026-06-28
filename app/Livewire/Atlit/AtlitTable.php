@@ -19,6 +19,7 @@ class AtlitTable extends Component
     public $filterCabor = '';
     public $filterKategori = '';
     public $filterStatus = '';
+    public $filterTahun = '';
     public $perPage = 10;
 
     protected $paginationTheme = 'bootstrap';
@@ -29,6 +30,7 @@ class AtlitTable extends Component
         'filterCabor' => ['except' => ''],
         'filterKategori' => ['except' => ''],
         'filterStatus' => ['except' => ''],
+        'filterTahun' => ['except' => ''],
     ];
 
     // Fix: Gunakan updatedPropertyName untuk reactive updates
@@ -58,6 +60,11 @@ class AtlitTable extends Component
         $this->resetPage();
     }
 
+    public function updatedFilterTahun()
+    {
+        $this->resetPage();
+    }
+
     // Fix: Tambahkan method untuk perPage
     public function updatedPerPage()
     {
@@ -71,6 +78,7 @@ class AtlitTable extends Component
         $this->filterCabor = '';
         $this->filterKategori = '';
         $this->filterStatus = '';
+        $this->filterTahun = '';
         $this->resetPage();
     }
 
@@ -105,7 +113,7 @@ class AtlitTable extends Component
 
     public function render()
     {
-        $query = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit']);
+        $query = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit', 'riwayat']);
 
         // Apply search - pastikan method search() ada di Model Atlit
         if (!empty($this->search)) {
@@ -131,6 +139,12 @@ class AtlitTable extends Component
 
         if (!empty($this->filterStatus)) {
             $query->where('status', $this->filterStatus);
+        }
+
+        if (!empty($this->filterTahun)) {
+            $query->whereHas('riwayat', function ($q) {
+                $q->where('tahun', $this->filterTahun);
+            });
         }
 
         $atlit = $query->latest()->paginate($this->perPage);

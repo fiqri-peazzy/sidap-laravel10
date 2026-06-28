@@ -318,16 +318,15 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        // Data untuk Chart - Pertumbuhan Atlit per Bulan (6 bulan terakhir)
-        $chartAtlit = Atlit::selectRaw('MONTH(created_at) as bulan, YEAR(created_at) as tahun, COUNT(*) as total')
-            ->where('created_at', '>=', Carbon::now()->subMonths(6))
-            ->groupBy('tahun', 'bulan')
-            ->orderBy('tahun')
-            ->orderBy('bulan')
+        // Data untuk Chart - Pertumbuhan Atlit per Tahun (5 Tahun Terakhir)
+        $chartAtlit = Atlit::selectRaw('YEAR(created_at) as chart_tahun, COUNT(*) as total')
+            ->where('created_at', '>=', Carbon::now()->subYears(5))
+            ->groupByRaw('YEAR(created_at)')
+            ->orderByRaw('YEAR(created_at) ASC')
             ->get()
             ->map(function ($item) {
                 return [
-                    'bulan' => Carbon::create()->month($item->bulan)->locale('id')->format('M Y'),
+                    'label' => $item->chart_tahun,
                     'total' => $item->total
                 ];
             });

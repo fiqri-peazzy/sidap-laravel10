@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class JadwalEventController extends Controller
 {
+    public function indexAtlit()
+    {
+        return redirect()->route('atlit.kalender');
+    }
     public function index(Request $request)
     {
         $query = JadwalEvent::with(['cabangOlahraga']);

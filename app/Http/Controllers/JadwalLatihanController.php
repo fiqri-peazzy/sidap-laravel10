@@ -12,6 +12,10 @@ use Carbon\Carbon;
 
 class JadwalLatihanController extends Controller
 {
+    public function indexAtlit()
+    {
+        return redirect()->route('atlit.kalender');
+    }
     public function index(Request $request)
     {
         $query = JadwalLatihan::with(['cabangOlahraga', 'pelatih', 'klub']);
