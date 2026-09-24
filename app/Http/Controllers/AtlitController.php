@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Atlit;
 use App\Models\Klub;
+use App\Models\Sekolah;
 use App\Models\Cabor;
 use App\Models\KategoriAtlit;
 use App\Models\User;
@@ -25,9 +26,10 @@ class AtlitController extends Controller
     public function create()
     {
         $klub = Klub::aktif()->orderBy('nama_klub')->get();
+        $sekolah = Sekolah::aktif()->orderBy('nama_sekolah')->get();
         $cabangOlahraga = Cabor::aktif()->orderBy('nama_cabang')->get();
 
-        return view('admin.atlit.create', compact('klub', 'cabangOlahraga'));
+        return view('admin.atlit.create', compact('klub', 'sekolah', 'cabangOlahraga'));
     }
 
     public function store(Request $request)
@@ -83,13 +85,14 @@ class AtlitController extends Controller
     public function edit(Atlit $atlit)
     {
         $klub = Klub::aktif()->orderBy('nama_klub')->get();
+        $sekolah = Sekolah::aktif()->orderBy('nama_sekolah')->get();
         $cabangOlahraga = Cabor::aktif()->orderBy('nama_cabang')->get();
         $kategoriAtlit = KategoriAtlit::where('cabang_olahraga_id', $atlit->cabang_olahraga_id)
             ->aktif()
             ->orderBy('nama_kategori')
             ->get();
 
-        return view('admin.atlit.edit', compact('atlit', 'klub', 'cabangOlahraga', 'kategoriAtlit'));
+        return view('admin.atlit.edit', compact('atlit', 'klub', 'sekolah', 'cabangOlahraga', 'kategoriAtlit'));
     }
 
     public function update(Request $request, Atlit $atlit)

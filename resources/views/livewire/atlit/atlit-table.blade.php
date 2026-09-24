@@ -39,6 +39,14 @@
             </select>
         </div>
         <div class="col-md-2">
+            <select wire:model.live="filterSekolah" class="form-control">
+                <option value="">Semua Sekolah</option>
+                @foreach ($sekolah as $s)
+                    <option value="{{ $s->id }}">{{ $s->nama_sekolah }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2">
             <select wire:model.live="filterCabor" class="form-control">
                 <option value="">Semua Cabor</option>
                 @foreach ($cabangOlahraga as $cabor)
@@ -46,7 +54,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <select wire:model.live="filterKategori" class="form-control">
                 <option value="">Semua Kategori</option>
                 @foreach ($kategoriAtlit as $kategori)
@@ -62,9 +70,9 @@
                 <option value="pensiun">Pensiun</option>
             </select>
         </div>
-        <div class="col-md-1">
-            <button wire:click="resetFilters" class="btn btn-outline-secondary w-100" title="Reset Filter">
-                <i class="fas fa-undo"></i>
+        <div class="col-md-12 mt-2 text-right">
+            <button wire:click="resetFilters" class="btn btn-outline-secondary btn-sm" title="Reset Filter">
+                <i class="fas fa-undo"></i> Reset Filter
             </button>
         </div>
     </div>
@@ -82,6 +90,7 @@
                     <th width="5%">JK</th>
                     <th width="5%">Umur</th>
                     <th width="10%">Klub</th>
+                    <th width="10%">Sekolah</th>
                     <th width="10%">Cabor</th>
                     <th width="10%">Kategori</th>
                     <th width="7%">Status</th>
@@ -121,6 +130,9 @@
                             <small>{{ $item->klub->nama_klub ?? '-' }}</small>
                         </td>
                         <td>
+                            <small>{{ $item->sekolah->nama_sekolah ?? '-' }}</small>
+                        </td>
+                        <td>
                             <small>{{ $item->cabangOlahraga->nama_cabang ?? '-' }}</small>
                         </td>
                         <td>
@@ -146,11 +158,11 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="text-center py-4">
+                        <td colspan="12" class="text-center py-4">
                             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">Tidak ada data atlit</h5>
                             <p class="text-muted">
-                                @if ($search || $filterKlub || $filterCabor || $filterKategori || $filterStatus)
+                                @if ($search || $filterKlub || $filterSekolah || $filterCabor || $filterKategori || $filterStatus)
                                     Tidak ada data yang sesuai dengan filter yang dipilih.
                                 @else
                                     Belum ada data atlit yang tersimpan.

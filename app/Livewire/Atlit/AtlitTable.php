@@ -4,6 +4,7 @@ namespace App\Livewire\Atlit;
 
 use App\Models\Atlit;
 use App\Models\Klub;
+use App\Models\Sekolah;
 use App\Models\Cabor;
 use App\Models\KategoriAtlit;
 use Livewire\Component;
@@ -16,6 +17,7 @@ class AtlitTable extends Component
 
     public $search = '';
     public $filterKlub = '';
+    public $filterSekolah = '';
     public $filterCabor = '';
     public $filterKategori = '';
     public $filterStatus = '';
@@ -27,6 +29,7 @@ class AtlitTable extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'filterKlub' => ['except' => ''],
+        'filterSekolah' => ['except' => ''],
         'filterCabor' => ['except' => ''],
         'filterKategori' => ['except' => ''],
         'filterStatus' => ['except' => ''],
@@ -40,6 +43,11 @@ class AtlitTable extends Component
     }
 
     public function updatedFilterKlub()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilterSekolah()
     {
         $this->resetPage();
     }
@@ -75,6 +83,7 @@ class AtlitTable extends Component
     {
         $this->search = '';
         $this->filterKlub = '';
+        $this->filterSekolah = '';
         $this->filterCabor = '';
         $this->filterKategori = '';
         $this->filterStatus = '';
@@ -113,7 +122,7 @@ class AtlitTable extends Component
 
     public function render()
     {
-        $query = Atlit::with(['klub', 'cabangOlahraga', 'kategoriAtlit', 'riwayat']);
+        $query = Atlit::with(['klub', 'sekolah', 'cabangOlahraga', 'kategoriAtlit', 'riwayat']);
 
         // Apply search - pastikan method search() ada di Model Atlit
         if (!empty($this->search)) {
@@ -127,6 +136,10 @@ class AtlitTable extends Component
         // Apply filters dengan pengecekan yang lebih robust
         if (!empty($this->filterKlub)) {
             $query->where('klub_id', $this->filterKlub);
+        }
+
+        if (!empty($this->filterSekolah)) {
+            $query->where('sekolah_id', $this->filterSekolah);
         }
 
         if (!empty($this->filterCabor)) {
@@ -151,6 +164,7 @@ class AtlitTable extends Component
 
         // Data untuk dropdown filter
         $klub = Klub::aktif()->orderBy('nama_klub')->get();
+        $sekolah = Sekolah::aktif()->orderBy('nama_sekolah')->get();
         $cabangOlahraga = Cabor::aktif()->orderBy('nama_cabang')->get();
         $kategoriAtlit = collect();
 
@@ -161,6 +175,6 @@ class AtlitTable extends Component
                 ->get();
         }
 
-        return view('livewire.atlit.atlit-table', compact('atlit', 'klub', 'cabangOlahraga', 'kategoriAtlit'));
+        return view('livewire.atlit.atlit-table', compact('atlit', 'klub', 'sekolah', 'cabangOlahraga', 'kategoriAtlit'));
     }
 }

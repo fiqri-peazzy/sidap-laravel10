@@ -160,6 +160,23 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="sekolah_id">Sekolah</label>
+                                        <select class="form-control @error('sekolah_id') is-invalid @enderror"
+                                            id="sekolah_id" name="sekolah_id">
+                                            <option value="">- Tidak ada / belum diisi -</option>
+                                            @foreach ($sekolah as $s)
+                                                <option value="{{ $s->id }}"
+                                                    {{ old('sekolah_id') == $s->id ? 'selected' : '' }}>
+                                                    {{ $s->nama_sekolah }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('sekolah_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="cabang_olahraga_id">Cabang Olahraga <span
                                                 class="text-danger">*</span></label>
                                         <select class="form-control @error('cabang_olahraga_id') is-invalid @enderror"

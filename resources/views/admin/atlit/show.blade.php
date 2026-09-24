@@ -216,6 +216,10 @@
                                         <td>: {{ $atlit->klub->nama_klub }}</td>
                                     </tr>
                                     <tr>
+                                        <td><strong>Sekolah</strong></td>
+                                        <td>: {{ $atlit->sekolah->nama_sekolah ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
                                         <td><strong>Cabang Olahraga</strong></td>
                                         <td>: {{ $atlit->cabangOlahraga->nama_cabang }}</td>
                                     </tr>

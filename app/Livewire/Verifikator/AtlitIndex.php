@@ -118,7 +118,7 @@ class AtlitIndex extends Component
     public function render()
     {
         $atlets = Atlit::query()
-            ->with(['cabangOlahraga', 'kategoriAtlit', 'klub', 'user'])
+            ->with(['cabangOlahraga', 'kategoriAtlit', 'klub', 'sekolah', 'user'])
             ->withCount([
                 'dokumen',
                 'dokumen as verified_documents_count' => function ($query) {

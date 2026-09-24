@@ -202,6 +202,7 @@
                                 <th>Nama Lengkap</th>
                                 <th>NIK</th>
                                 <th>Cabang Olahraga</th>
+                                <th>Sekolah</th>
                                 <th>Kategori</th>
                                 <th>Status Verifikasi</th>
                                 <th>Dokumen</th>
@@ -234,6 +235,7 @@
                                     </td>
                                     <td>{{ $atlet->nik }}</td>
                                     <td>{{ $atlet->cabangOlahraga->nama_cabang ?? '-' }}</td>
+                                    <td>{{ $atlet->sekolah->nama_sekolah ?? '-' }}</td>
                                     <td>{{ $atlet->kategoriAtlit->nama_kategori ?? '-' }}</td>
                                     <td>
                                         @if ($atlet->status_verifikasi == \App\Models\Atlit::STATUS_VERIFIKASI_PENDING)
