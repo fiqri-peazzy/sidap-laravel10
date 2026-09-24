@@ -27,17 +27,6 @@
             <h1 class="auth-title">Masuk ke Akun Anda</h1>
             <p class="auth-subtitle">Silakan masukkan email dan password Anda</p>
 
-            <!-- Validation Errors -->
-            <x-validation-errors class="mb-4" />
-
-            <!-- Status Message -->
-            @if (session('status'))
-                <div class="alert alert-success" role="alert">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    {{ session('status') }}
-                </div>
-            @endif
-
             <!-- Login Form -->
             <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
@@ -108,6 +97,34 @@
 
 @push('scripts')
     <script>
+        // Tampilkan pesan error login sebagai floating toast, bukan blok statis
+        document.addEventListener('DOMContentLoaded', function() {
+            @if ($errors->any())
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Login Gagal',
+                    text: @json($errors->first()),
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                });
+            @endif
+
+            @if (session('status'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: @json(session('status')),
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                });
+            @endif
+        });
+
         // Toggle Password Visibility
         document.addEventListener('DOMContentLoaded', function() {
             const togglePassword = document.getElementById('togglePassword');

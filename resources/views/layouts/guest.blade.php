@@ -19,30 +19,42 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
+    <!-- SweetAlert2 (untuk notifikasi floating) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.4/sweetalert2.min.css">
+
     <!-- Lottie Files -->
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js" type="module"></script>
 
     <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             background: #ffffff !important;
             font-family: 'Nunito', sans-serif;
         }
 
         .auth-wrapper {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow: hidden;
         }
 
         .auth-card {
             background: #ffffff;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             max-width: 1000px;
             width: 100%;
+            max-height: 95vh;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -304,6 +316,9 @@
     <script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
 
     @livewireScripts
+
+    <!-- SweetAlert2 (untuk notifikasi floating) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.4/sweetalert2.min.js"></script>
 
     @stack('scripts')
 </body>

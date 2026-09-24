@@ -143,7 +143,7 @@
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <!-- Download Button -->
-                                                <a href="{{ route('atlit.dokumen.download', $dokumen->id) }}" 
+                                                <a href="{{ route($downloadRouteName, $dokumen->id) }}"
                                                    class="btn btn-info btn-sm" 
                                                    title="Download">
                                                     <i class="fas fa-download"></i>

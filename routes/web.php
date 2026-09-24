@@ -179,6 +179,10 @@ Route::middleware([
         // Operator sekolah dapat CRUD data atlet binaan sekolahnya sendiri
         Route::resource('atlit', SekolahAtlitController::class);
 
+        // Operator sekolah dapat mengelola dokumen atlet binaannya agar bisa diverifikasi
+        Route::get('/atlit/{atlit}/dokumen', [SekolahAtlitController::class, 'dokumenIndex'])->name('atlit.dokumen.index');
+        Route::get('/dokumen/{dokumen}/download', [SekolahAtlitController::class, 'dokumenDownload'])->name('atlit.dokumen.download');
+
         // Import massal data atlet via Excel
         Route::prefix('atlit-import')->name('atlit.import.')->group(function () {
             Route::get('/', [SekolahAtlitImportController::class, 'create'])->name('create');

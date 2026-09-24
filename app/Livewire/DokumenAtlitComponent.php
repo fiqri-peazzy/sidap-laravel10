@@ -16,6 +16,7 @@ class DokumenAtlitComponent extends Component
 
     public $atlit;
     public $dokumenList = [];
+    public $downloadRouteName = 'atlit.dokumen.download';
 
     // Form data
     public $kategori_berkas;
@@ -44,9 +45,10 @@ class DokumenAtlitComponent extends Component
         'file_upload.max' => 'Ukuran file maksimal 5MB.',
     ];
 
-    public function mount(Atlit $atlit)
+    public function mount(Atlit $atlit, string $downloadRouteName = 'atlit.dokumen.download')
     {
         $this->atlit = $atlit;
+        $this->downloadRouteName = $downloadRouteName;
         $this->loadDokumen();
     }
 

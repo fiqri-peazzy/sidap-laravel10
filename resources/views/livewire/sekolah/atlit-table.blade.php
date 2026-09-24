@@ -103,6 +103,10 @@
                                     title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                <a href="{{ route('sekolah.atlit.dokumen.index', $item->id) }}" class="btn btn-primary btn-sm"
+                                    title="Dokumen">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
                                 <button wire:click="delete({{ $item->id }})" class="btn btn-danger btn-sm"
                                     title="Hapus" wire:confirm="Apakah Anda yakin ingin menghapus data ini?">
                                     <i class="fas fa-trash"></i>

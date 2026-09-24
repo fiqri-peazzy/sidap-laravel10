@@ -7,6 +7,7 @@ use App\Models\Atlit;
 use App\Models\Klub;
 use App\Models\Cabor;
 use App\Models\KategoriAtlit;
+use App\Models\DokumenAtlit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -157,6 +158,32 @@ class AtlitController extends Controller
         $atlit->delete();
 
         return redirect()->route('sekolah.atlit.index')->with('success', 'Data atlet berhasil dihapus.');
+    }
+
+    /**
+     * Halaman kelola dokumen atlet (upload/lihat/hapus) untuk diverifikasi verifikator.
+     */
+    public function dokumenIndex(Atlit $atlit)
+    {
+        $this->authorizeSekolah($atlit);
+
+        return view('sekolah.atlit.dokumen', compact('atlit'));
+    }
+
+    /**
+     * Download dokumen milik atlet binaan sekolah yang login.
+     */
+    public function dokumenDownload(DokumenAtlit $dokumen)
+    {
+        $this->authorizeSekolah($dokumen->atlit);
+
+        $filePath = storage_path('app/private/dokumen_atlit/' . $dokumen->file_path);
+
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $dokumen->nama_file);
     }
 
     /**

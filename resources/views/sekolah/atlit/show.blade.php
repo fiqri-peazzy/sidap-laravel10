@@ -7,6 +7,9 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Detail Atlet</h1>
             <div>
+                <a href="{{ route('sekolah.atlit.dokumen.index', $atlit->id) }}" class="btn btn-sm btn-primary shadow-sm">
+                    <i class="fas fa-file-pdf fa-sm"></i> Kelola Dokumen
+                </a>
                 <a href="{{ route('sekolah.atlit.edit', $atlit->id) }}" class="btn btn-sm btn-warning shadow-sm">
                     <i class="fas fa-edit fa-sm"></i> Edit
                 </a>
