@@ -28,7 +28,7 @@
             <p class="auth-subtitle">Silakan masukkan email dan password Anda</p>
 
             <!-- Login Form -->
-            <form method="POST" action="{{ route('login') }}" id="loginForm">
+            <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
                 @csrf
 
                 <!-- Email Input -->

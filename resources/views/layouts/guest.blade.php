@@ -29,6 +29,8 @@
         html,
         body {
             height: 100%;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
         }
 
@@ -39,11 +41,13 @@
 
         .auth-wrapper {
             height: 100vh;
+            width: 100vw;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         .auth-card {
@@ -65,42 +69,43 @@
 
         .auth-left {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 60px 40px;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 600px;
         }
 
         .lottie-container {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .auth-left h3 {
             color: #ffffff;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
+            font-size: 20px;
         }
 
         .auth-left p {
             color: rgba(255, 255, 255, 0.9);
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
+            margin-bottom: 0;
         }
 
         .auth-right {
-            padding: 60px 50px;
+            padding: 25px 50px;
         }
 
         .logo-container {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
         }
 
         .logo-container img {
-            max-width: 120px;
+            max-width: 80px;
             height: auto;
             transition: transform 0.3s ease;
         }
@@ -110,26 +115,26 @@
         }
 
         .auth-title {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             text-align: center;
         }
 
         .auth-subtitle {
             color: #7f8c8d;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 14px;
+            margin-bottom: 16px;
+            font-size: 13px;
         }
 
         .form-group {
             position: relative;
-            margin-bottom: 25px;
+            margin-bottom: 14px;
         }
 
-        .form-group i {
+        .form-group i:not(.password-toggle) {
             position: absolute;
             left: 20px;
             top: 50%;
@@ -173,8 +178,15 @@
             color: #667eea;
         }
 
+        /* Matikan ikon bawaan Bootstrap untuk state invalid, biar tidak numpuk
+           dengan ikon custom (envelope/lock/eye) yang sudah ada di desain ini */
+        .form-control-icon.is-invalid {
+            background-image: none !important;
+            padding-right: 50px !important;
+        }
+
         .custom-checkbox {
-            margin-bottom: 25px;
+            margin-bottom: 14px;
         }
 
         .custom-checkbox label {
@@ -209,7 +221,7 @@
 
         .divider {
             text-align: center;
-            margin: 25px 0;
+            margin: 14px 0;
             position: relative;
         }
 
@@ -233,7 +245,7 @@
 
         .auth-links {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .auth-links a {
