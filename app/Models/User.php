@@ -29,6 +29,7 @@ class User extends Authenticatable
         'password',
         'role',
         'atlit_id',
+        'sekolah_id',
     ];
 
     /**
@@ -70,6 +71,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relationship dengan model Sekolah
+     */
+    public function sekolah()
+    {
+        return $this->belongsTo(Sekolah::class);
+    }
+
+    /**
      * Check if user has admin role
      */
     public function isAdmin()
@@ -94,6 +103,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user has sekolah role
+     */
+    public function isSekolah()
+    {
+        return $this->role === 'sekolah';
+    }
+
+    /**
      * Check if user has specific role
      */
     public function hasRole($role)
@@ -113,6 +130,8 @@ class User extends Authenticatable
                 return 'atlit.dashboard';
             case 'verifikator':
                 return 'verifikator.dashboard';
+            case 'sekolah':
+                return 'sekolah.dashboard';
             default:
                 return 'dashboard';
         }

@@ -158,6 +158,7 @@ class AtlitVerifikasiController extends Controller
             'cabangOlahraga',
             'kategoriAtlit',
             'klub',
+            'sekolah',
             'user',
             'verifikator',
             'dokumen' => function ($query) {

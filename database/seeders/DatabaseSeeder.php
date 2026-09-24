@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             KategoriAtlitSeeder::class,
             KlubSeeder::class,
             PelatihSeeder::class,
+            SekolahSeeder::class,
             AtlitSeeder::class,
             JadwalEventSeeder::class,
             JadwalLatihanSeeder::class,

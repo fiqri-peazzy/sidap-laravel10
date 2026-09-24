@@ -22,6 +22,7 @@ class Atlit extends Model
         'telepon',
         'email',
         'klub_id',
+        'sekolah_id',
         'cabang_olahraga_id',
         'kategori_atlit_id',
         'foto',
@@ -37,6 +38,7 @@ class Atlit extends Model
     protected $casts = [
         'tanggal_lahir' => 'date',
         'klub_id' => 'integer',
+        'sekolah_id' => 'integer',
         'cabang_olahraga_id' => 'integer',
         'kategori_atlit_id' => 'integer',
         'user_id' => 'integer',
@@ -53,6 +55,11 @@ class Atlit extends Model
     public function klub()
     {
         return $this->belongsTo(Klub::class, 'klub_id');
+    }
+
+    public function sekolah()
+    {
+        return $this->belongsTo(Sekolah::class, 'sekolah_id');
     }
 
     public function cabangOlahraga()
@@ -408,6 +415,7 @@ class Atlit extends Model
             'telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email|unique:atlit,email,' . $id,
             'klub_id' => 'required|exists:klub,id',
+            'sekolah_id' => 'nullable|exists:sekolah,id',
             'cabang_olahraga_id' => 'required|exists:cabang_olahraga,id',
             'kategori_atlit_id' => 'required|exists:kategori_atlit,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

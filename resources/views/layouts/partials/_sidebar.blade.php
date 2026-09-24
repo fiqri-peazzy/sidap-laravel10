@@ -54,6 +54,15 @@
             </a>
         </li>
 
+        <!-- Nav Item - Sekolah -->
+        <li
+            class="nav-item {{ request()->routeIs('admin.sekolah.*') || request()->routeIs('sekolah.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.sekolah.index') }}">
+                <i class="fas fa-fw fa-school"></i>
+                <span>Sekolah</span>
+            </a>
+        </li>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
 
@@ -361,6 +370,63 @@
             </p>
             <a class="btn btn-info btn-sm"
                 href="{{ route('verifikator.prestasi.index', ['status' => 'menunggu']) }}">Lihat Pending</a>
+        </div>
+    </ul>
+@elseif(auth()->user()->isSekolah())
+    {{-- SEKOLAH SIDEBAR --}}
+    <ul class="navbar-nav bg-gradient-info sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center"
+            href="{{ route('sekolah.dashboard') }}">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-school"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">SIDAP PPLP <sup>Sekolah</sup></div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item {{ request()->routeIs('sekolah.dashboard') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('sekolah.dashboard') }}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">Data Atlet Saya</div>
+
+        <!-- Nav Item - Data Atlet -->
+        <li class="nav-item {{ request()->routeIs('sekolah.atlit.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('sekolah.atlit.index') }}">
+                <i class="fas fa-fw fa-user-friends"></i>
+                <span>Daftar Atlet</span>
+            </a>
+        </li>
+        <li class="nav-item {{ request()->routeIs('sekolah.atlit.create') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('sekolah.atlit.create') }}">
+                <i class="fas fa-fw fa-user-plus"></i>
+                <span>Tambah Atlet</span>
+            </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+        <!-- Sidebar Message -->
+        <div class="sidebar-card d-none d-lg-flex">
+            <p class="text-center mb-2"><strong>Portal Sekolah</strong> - Input data atlet binaan sekolah Anda dengan
+                mudah!</p>
         </div>
     </ul>
 @else

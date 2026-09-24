@@ -9,6 +9,9 @@ use App\Http\Controllers\JadwalEventController;
 use App\Http\Controllers\KalenderKegiatanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SekolahController;
+use App\Http\Controllers\Sekolah\AtlitController as SekolahAtlitController;
+use App\Http\Controllers\Sekolah\DashboardController as SekolahDashboardController;
 use App\Http\Livewire\LaporanAtlit;
 use App\Http\Livewire\LaporanPrestasi;
 
@@ -47,6 +50,8 @@ Route::middleware([
         Route::get('/pelatih', function () {
             return view('admin.pelatih');
         })->name('pelatih.index');
+
+        Route::get('/sekolah', [SekolahController::class, 'index'])->name('sekolah.index');
 
         // Routes untuk Atlit - Admin dapat CRUD semua
         Route::resource('atlit', AtlitController::class);
@@ -162,6 +167,15 @@ Route::middleware([
             }
             return response()->file($path);
         })->name('dokumen-atlit.preview');
+    });
+
+    // SEKOLAH ROUTES
+    Route::middleware('role:sekolah')->prefix('sekolah')->name('sekolah.')->group(function () {
+        // Sekolah Dashboard
+        Route::get('/dashboard', [SekolahDashboardController::class, 'index'])->name('dashboard');
+
+        // Operator sekolah dapat CRUD data atlet binaan sekolahnya sendiri
+        Route::resource('atlit', SekolahAtlitController::class);
     });
 
     // SHARED ROUTES (dapat diakses berdasarkan role dengan middleware)

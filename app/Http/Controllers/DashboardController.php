@@ -29,6 +29,8 @@ class DashboardController extends Controller
                 return redirect()->route('atlit.dashboard');
             case 'verifikator':
                 return redirect()->route('verifikator.dashboard');
+            case 'sekolah':
+                return redirect()->route('sekolah.dashboard');
             default:
                 return view('admin.dashboard');
         }

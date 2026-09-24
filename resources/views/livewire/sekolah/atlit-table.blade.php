@@ -1,0 +1,146 @@
+<div>
+    @if (session()->has('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    <!-- Filter Section -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <input wire:model.live.debounce.300ms="search" type="text" class="form-control"
+                placeholder="Cari nama, NIK, email...">
+        </div>
+        <div class="col-md-3">
+            <select wire:model.live="filterCabor" class="form-control">
+                <option value="">Semua Cabor</option>
+                @foreach ($cabangOlahraga as $cabor)
+                    <option value="{{ $cabor->id }}">{{ $cabor->nama_cabang }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select wire:model.live="filterKategori" class="form-control">
+                <option value="">Semua Kategori</option>
+                @foreach ($kategoriAtlit as $kategori)
+                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select wire:model.live="filterStatus" class="form-control" title="Status Verifikasi">
+                <option value="">Status Verifikasi</option>
+                <option value="pending">Menunggu</option>
+                <option value="verified">Terverifikasi</option>
+                <option value="rejected">Ditolak</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button wire:click="resetFilters" class="btn btn-outline-secondary w-100" title="Reset Filter">
+                <i class="fas fa-undo"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th width="5%">No</th>
+                    <th width="10%">Foto</th>
+                    <th width="18%">Nama Lengkap</th>
+                    <th width="12%">NIK</th>
+                    <th width="13%">Klub</th>
+                    <th width="13%">Cabor</th>
+                    <th width="12%">Status Verifikasi</th>
+                    <th width="7%">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($atlit as $index => $item)
+                    <tr>
+                        <td>{{ $atlit->firstItem() + $index }}</td>
+                        <td class="text-center">
+                            @if ($item->foto_url)
+                                <img src="{{ $item->foto_url }}" alt="Foto {{ $item->nama_lengkap }}"
+                                    class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                            @else
+                                <div class="bg-secondary d-flex align-items-center justify-content-center"
+                                    style="width: 50px; height: 50px; border-radius: 4px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            @endif
+                        </td>
+                        <td>
+                            <strong>{{ $item->nama_lengkap }}</strong>
+                            @if ($item->email)
+                                <br><small class="text-muted">{{ $item->email }}</small>
+                            @endif
+                        </td>
+                        <td>{{ $item->nik }}</td>
+                        <td><small>{{ $item->klub->nama_klub ?? '-' }}</small></td>
+                        <td><small>{{ $item->cabangOlahraga->nama_cabang ?? '-' }}</small></td>
+                        <td>{!! $item->status_verifikasi_badge !!}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ route('sekolah.atlit.show', $item->id) }}" class="btn btn-info btn-sm"
+                                    title="Detail">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('sekolah.atlit.edit', $item->id) }}" class="btn btn-warning btn-sm"
+                                    title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button wire:click="delete({{ $item->id }})" class="btn btn-danger btn-sm"
+                                    title="Hapus" wire:confirm="Apakah Anda yakin ingin menghapus data ini?">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Belum ada data atlet</h5>
+                            <p class="text-muted">
+                                @if ($search || $filterCabor || $filterKategori || $filterStatus)
+                                    Tidak ada data yang sesuai dengan filter yang dipilih.
+                                @else
+                                    Silakan tambahkan data atlet binaan sekolah Anda.
+                                @endif
+                            </p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+            <select wire:model.live="perPage" class="form-control form-control-sm" style="width: auto;">
+                <option value="5">5 per halaman</option>
+                <option value="10">10 per halaman</option>
+                <option value="25">25 per halaman</option>
+                <option value="50">50 per halaman</option>
+            </select>
+        </div>
+        <div>
+            {{ $atlit->links() }}
+        </div>
+    </div>
+</div>

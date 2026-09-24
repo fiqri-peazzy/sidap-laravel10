@@ -312,6 +312,10 @@
                                             <td>{{ $atlit->klub->nama_klub ?? 'Belum ada klub' }}</td>
                                         </tr>
                                         <tr>
+                                            <td><strong>Sekolah:</strong></td>
+                                            <td>{{ $atlit->sekolah->nama_sekolah ?? 'Belum ada sekolah' }}</td>
+                                        </tr>
+                                        <tr>
                                             <td><strong>Kategori:</strong></td>
                                             <td>{{ $atlit->kategoriAtlit->nama_kategori ?? 'Belum ada kategori' }}</td>
                                         </tr>
