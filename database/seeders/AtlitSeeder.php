@@ -114,7 +114,6 @@ class AtlitSeeder extends Seeder
                     'klub_id' => $klubId,
                     'cabang_olahraga_id' => $caborId,
                     'kategori_atlit_id' => $kategoriId,
-                    'prestasi' => fake()->paragraph(),
                     'status' => 'aktif',
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,

@@ -334,6 +334,62 @@
                 </div>
             </div>
         </div>
+
+        @if ($atlit->sekolah)
+            <!-- Informasi Sekolah -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-school mr-2"></i>
+                                Informasi Sekolah
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td width="150"><strong>Nama Sekolah:</strong></td>
+                                            <td>{{ $atlit->sekolah->nama_sekolah }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>NPSN:</strong></td>
+                                            <td>{{ $atlit->sekolah->npsn ?? '-' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Jenjang:</strong></td>
+                                            <td>{{ $atlit->sekolah->jenjang }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kepala Sekolah:</strong></td>
+                                            <td>{{ $atlit->sekolah->kepala_sekolah ?? '-' }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td width="100"><strong>Alamat:</strong></td>
+                                            <td>{{ $atlit->sekolah->alamat_lengkap }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Telepon:</strong></td>
+                                            <td>{{ $atlit->sekolah->telepon ?? '-' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Email:</strong></td>
+                                            <td>{{ $atlit->sekolah->email ?? '-' }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 @endsection
 

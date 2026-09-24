@@ -11,7 +11,9 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SekolahController;
 use App\Http\Controllers\Sekolah\AtlitController as SekolahAtlitController;
+use App\Http\Controllers\Sekolah\AtlitImportController as SekolahAtlitImportController;
 use App\Http\Controllers\Sekolah\DashboardController as SekolahDashboardController;
+use App\Http\Controllers\Sekolah\LaporanController as SekolahLaporanController;
 use App\Http\Livewire\LaporanAtlit;
 use App\Http\Livewire\LaporanPrestasi;
 
@@ -176,6 +178,20 @@ Route::middleware([
 
         // Operator sekolah dapat CRUD data atlet binaan sekolahnya sendiri
         Route::resource('atlit', SekolahAtlitController::class);
+
+        // Import massal data atlet via Excel
+        Route::prefix('atlit-import')->name('atlit.import.')->group(function () {
+            Route::get('/', [SekolahAtlitImportController::class, 'create'])->name('create');
+            Route::post('/', [SekolahAtlitImportController::class, 'store'])->name('store');
+            Route::get('/template', [SekolahAtlitImportController::class, 'downloadTemplate'])->name('template');
+        });
+
+        // Laporan & export data atlet sekolah
+        Route::prefix('laporan')->name('laporan.')->group(function () {
+            Route::get('/', [SekolahLaporanController::class, 'index'])->name('index');
+            Route::get('/cetak-pdf', [SekolahLaporanController::class, 'cetakPdf'])->name('cetak-pdf');
+            Route::get('/cetak-excel', [SekolahLaporanController::class, 'cetakExcel'])->name('cetak-excel');
+        });
     });
 
     // SHARED ROUTES (dapat diakses berdasarkan role dengan middleware)

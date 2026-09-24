@@ -414,6 +414,25 @@
                 <span>Tambah Atlet</span>
             </a>
         </li>
+        <li class="nav-item {{ request()->routeIs('sekolah.atlit.import.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('sekolah.atlit.import.create') }}">
+                <i class="fas fa-fw fa-file-excel"></i>
+                <span>Import Excel</span>
+            </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">Laporan</div>
+
+        <li class="nav-item {{ request()->routeIs('sekolah.laporan.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('sekolah.laporan.index') }}">
+                <i class="fas fa-fw fa-chart-bar"></i>
+                <span>Laporan Data Atlet</span>
+            </a>
+        </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">

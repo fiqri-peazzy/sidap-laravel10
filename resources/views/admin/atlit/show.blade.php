@@ -243,19 +243,59 @@
                     </div>
                 </div>
 
-                <!-- Prestasi -->
-                @if ($atlit->prestasi)
+                <!-- Informasi Sekolah -->
+                @if ($atlit->sekolah)
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Prestasi</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Informasi Sekolah</h6>
                         </div>
                         <div class="card-body">
-                            <div class="text-justify">
-                                {!! nl2br(e($atlit->prestasi)) !!}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="150"><strong>Nama Sekolah</strong></td>
+                                            <td>: {{ $atlit->sekolah->nama_sekolah }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>NPSN</strong></td>
+                                            <td>: {{ $atlit->sekolah->npsn ?? '-' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Jenjang</strong></td>
+                                            <td>: {{ $atlit->sekolah->jenjang }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kepala Sekolah</strong></td>
+                                            <td>: {{ $atlit->sekolah->kepala_sekolah ?? '-' }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td width="100"><strong>Alamat</strong></td>
+                                            <td>: {{ $atlit->sekolah->alamat_lengkap }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Telepon</strong></td>
+                                            <td>: {{ $atlit->sekolah->telepon ?? '-' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Email</strong></td>
+                                            <td>: {{ $atlit->sekolah->email ?? '-' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Status</strong></td>
+                                            <td>: {!! $atlit->sekolah->status_badge !!}</td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 @endif
+
             </div>
         </div>
     </div>
